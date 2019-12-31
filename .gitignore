@@ -1,0 +1,12 @@
+#Ignore everything
+*
+
+#Except for the few things that I want included
+!cpsystems.ins
+!cpsystems.dtx
+!cpsystems.sty
+!cpsystems.pdf
+!README.md
+!README.txt
+!LICENSE
+!.gitignore
