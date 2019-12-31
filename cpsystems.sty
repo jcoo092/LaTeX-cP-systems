@@ -1,39 +1,27 @@
-%% cpsystems.sty
-%% Copyright 2019 James Cooper, University of Auckland.
-%% This package was originally created to assist me while writing a paper on cP systems
-%% which should also largely re-appear in my PhD dissertation.
-%
-% This work may be distributed and/or modified under the
-% conditions of the LaTeX Project Public License, either version 1.3
-% of this license or (at your option) any later version.
-% The latest version of this license is in
-%   http://www.latex-project.org/lppl.txt
-% and version 1.3 or later is part of all distributions of LaTeX
-% version 2005/12/01 or later.
-%
-% This work has the LPPL maintenance status `maintained'.
-% The 'canonical' version of this work is currently to be found at https://github.com/jcoo092/LaTeX-cP-systems/
-% Constructive pull requests and suggestions for improvements are very welcome.
-%
-% The Current Maintainer of this work is James Cooper, University of Auckland.
-% Email: jcoo092@aucklanduni.ac.nz
-%
-% This work consists of the file cpsystems.sty.
-%
-% The goal of this work is to provide a self-contained, easy-to-use LaTeX package that eases the typesetting of cP systems, a variant
-% of Membrane Computing/P systems created by Dr. Radu Nicolescu and collaborators in the early 2010s.
-%
-% For more on cP systems, please see for example: 
-% Nicolescu, R., & Henderson, A. (2018). An Introduction to cP Systems. In C. Graciani, A. Riscos-Núñez, G. Păun, G. Rozenberg, & A. Salomaa (Eds.), 
-% 	Enjoying Natural Computing: Essays Dedicated to Mario de Jesús Pérez-Jiménez on the Occasion of His 70th Birthday (pp. 204–227). 
-% 	https://doi.org/10.1007/978-3-030-00265-7_17
-%
-% While you are certainly free to peruse and use this package, if you don't know what Membrane Computing/P systems is, this package
-% is unlikely to be of much use to you
-%
-  
-\NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{cpsystems}[2019/11/29 Package to aid in typesetting cP~systems rulesets, following Nicolescu's standard style]
+%%
+%% This is file `cpsystems.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% cpsystems.dtx  (with options: `package')
+%% 
+%% This is a generated file.
+%% 
+%% Copyright (C) 2019 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
+%% --------------------------------------------------------------------------
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%   http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%% 
+\NeedsTeXFormat{LaTeX2e}[2017/01/01]
+\ProvidesPackage{cpsystems}
+[2019/12/31 v0.12 Package to aid in typesetting cP systems
+rulesets, following Nicolescu's standard style]
 
 \RequirePackage{array}
 \RequirePackage{framed}
@@ -41,28 +29,40 @@
 \RequirePackage{amsmath}
 \RequirePackage{trimspaces}
 \RequirePackage{newfloat}
-\newcounter{RuleNum}
 
-\DeclareFloatingEnvironment[name=Ruleset,within=none]{cpsrulesetfloat}
-\DeclareFloatingEnvironment[name=Objects Group,within=none]{cpsobjectsfloat}
-
-\newenvironment{cpsruleset}{\begin{framed}\begin{adjustwidth}{-1.0em}{-1.0em}\renewcommand{\arraystretch}{1.0}\[\begin{array}{lllllr}}{\end{array}\]\end{adjustwidth}\end{framed}}
-
-\newenvironment{cpsobjects}{\begin{framed}}{\end{framed}}
-
-% Required arguments are, in order, beginning state name; LHS of rule; the label to be applied to the arrow; the ending state name; the RHS of the rule
+\newcounter{cpsystems@RuleNum}
+\DeclareFloatingEnvironment[name=Ruleset,within=none]{cprulesetfloat}
+\DeclareFloatingEnvironment[name=Objects Group,within=none]{cpobjectsfloat}
+\newenvironment{cpruleset}
+{\begin{framed}\begin{adjustwidth}{-1.0em}{-1.0em}
+\renewcommand{\arraystretch}{1.0}\[\begin{array}{lllllr}}
+{\end{array}\]\end{adjustwidth}\end{framed}}
+\newenvironment{cpobjects}{\begin{framed}}{\end{framed}}
 \newcommand{\cprule}[5]{
-    \refstepcounter{RuleNum}
-    \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5 & (\arabic{RuleNum})\\}
+    \refstepcounter{cpsystems@RuleNum}
+    \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5
+     & (\arabic{cpsystems@RuleNum})\\}
 }
-
-\newcommand{\cppromoter}[1]{\trim@spaces@noexp{& & & & ~ \hspace{0.5cm} ~ | ~ #1 & \\}}
-\newcommand{\cpinhibitor}[1]{\trim@spaces@noexp{& & & & ~ \hspace{0.5cm} ~ \neg ~ #1 & \\}}
-\newcommand{\cpsend}[2]{\trim@spaces@noexp{\{#1\}!_{#2}}}
-\newcommand{\cprecv}[2]{\trim@spaces@noexp{\{#1\}?_{#2}}}
-\newcommand{\cpfunc}[2]{\trim@spaces@noexp{#1\big(#2\big)}}
-
-\newcommand{\cpobjectsline}[1]{\[#1\]}
-
+\newcommand{\cppromoter}[1]{
+\trim@spaces@noexp{& & & & ~ \hspace{0.5cm} ~ | ~ #1 & \\}
+}
+\newcommand{\cpinhibitor}[1]{
+\trim@spaces@noexp{& & & & ~ \hspace{0.5cm} ~ \neg ~ #1 & \\}
+}
+\newcommand{\cpsend}[2]{
+\trim@spaces@noexp{\{#1\}!_{#2}}
+}
+\newcommand{\cprecv}[2]{
+\trim@spaces@noexp{\{#1\}?_{#2}}
+}
+\newcommand{\cpfunc}[2]{
+\trim@spaces@noexp{#1\big(#2\big)}
+}
+\newcommand{\cpobjectsline}[1]{
+\[#1\]
+}
 \newcommand\cpterm[2]{%
-\item[$#1$]#2.}
+\item[$#1$]#2.}%    \end{macrocode}
+\endinput
+%%
+%% End of file `cpsystems.sty'.
