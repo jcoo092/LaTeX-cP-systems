@@ -50,6 +50,8 @@
 %<*driver>
 \documentclass{ltxdoc}
 \usepackage{cpsystems}[2019/12/31 v0.12]
+\usepackage{fancyvrb}
+\usepackage[hidelinks]{hyperref}
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
@@ -73,57 +75,341 @@
 %
 % \providecommand*{\url}{\texttt}
 % \GetFileInfo{cpsystems.dtx}
-% \title{The \textsf{cpsystems} \LaTeX{} package}
-% \author{James Cooper, University of Auckland \\ \url{jcoo092@aucklanduni.ac.nz}}
+% \title{The \textsf{cpsystems} \LaTeX{} package \\ \footnotesize{\url{https://github.com/jcoo092/LaTeX-cP-systems}}}
+% \author{James Cooper, University of Auckland \\ \footnotesize{\url{jcoo092@aucklanduni.ac.nz}}}
 % \date{\fileversion, \filedate}
 %
 % \maketitle
+% 
+% \VerbatimFootnotes
 %
 % \begin{abstract}
-%	A package to assist authors writing about cP~systems in typesetting their papers.  It comprises a handful of environments and macros that are intended to ease writing about cP~systems, and just as importantly, reduce the frequency of errors in their presentation.  It is recommended to all authors using LaTeX to write about cP~systems.  Even if you don't want to use it, looking at the implementation details may give you some ideas for your own style.
+%	A package to assist authors writing about cP~systems with typesetting their papers.  It comprises a handful of environments and macros that are intended to ease writing about cP~systems, and just as importantly, reduce the frequency of errors in the presentation.  It is recommended to all authors using \LaTeX{} to write about cP~systems.  Even if you don't want to use it, looking at the implementation details may give you some ideas for your own style.
 % \end{abstract}
 %
 % \section{Introduction}
-% This package was originally created by James Cooper to help with typesetting a paper on cP~systems (specifically one about modelling Belief Propagation in cP~systems).  The same commands had been copied from paper to paper, and across sections within papers, as most of them weren't made into proper \LaTeX{} macros.  This was, of course, extremely error prone, with formatting errors (and worse) sometimes making it into published articles.
+% This is a package to assist authors in writing papers on cP~systems, a particular variant of P~systems that was created by Dr. Radu Nicolescu, along with a number of collaborators, in the early 2010s.  This document assumes you have a working knowledge of cP~systems and how they should look when fully typeset.  It makes no attempt to explain the theory of cP~systems, nor why they are set out in the fashion that they.  If you would like further information on cP~systems, please see \cite{Nicolescu2018}, or \cite{Paun2002} for an excellent (albeit somewhat old) introduction to P~systems generally.
 % 
-% The commands in this package in many cases are not necessarily less verbose than simply typing out the commands inside the macros.  They are more `robust'\footnote{Note that \LaTeX{} has its own, different, concept of ``robust''.}, however, in that by using the defined macros the exact same commands are applied each time so there is greater consistency.  If the macro is mistyped, the (La)\TeX{} engine itself will report the error.  They also hopefully should add greater structure to a paper and prove useful in editing.
+% This package was originally created by James Cooper to help with typesetting a specific paper on cP~systems (specifically one about modelling Belief Propagation in cP~systems).  The same commands had historically been copied from paper to paper, and across sections within papers, as most of them weren't even formed into proper \LaTeX{} macros.  This was, of course, extremely error prone, with formatting errors (and worse) sometimes making it into published articles.  The commands in this package in many cases are not necessarily less verbose than simply typing out the commands inside the macros.  They are more `robust'\footnote{Note that \LaTeX{} has its own, different, concept of ``robust''.}, however, in that by using the defined macros the exact same commands are applied each time so there is greater consistency throughout the paper.\footnote{It is also hoped, perhaps vainly, that this package could eventually become \emph{the} standard way to set out cP~systems, assuring consistency across different papers by different authors.}  If the macro is mistyped, the \LaTeX{} engine itself will report the error.  They also hopefully should add greater structure to a paper and prove useful in editing the paper.
 % 
+% Note that, at present, this package is \emph{not} available on CTAN, and instead may only be retrieved from the author's academic GitHub account (see the URL listed in this document's title).  Once it has been sufficiently developed and stabilised, and/or there is consistent demand for such a package beyond the author's immediate research group, it likely will be added to CTAN, but there is no timeframe nor guarantee in place for that. 
 %
 % \section{Usage}
 %
-% Put text here.   Note that this section is currently woefully under-complete. 
+% This section firstly gives a brief overview of the individual usage of each command, and then supplies a few examples showing their combined use.  For the full examples, the verbatim \LaTeX{} code needed to typeset the corresponding example in each instance is bounded at the top and bottom by horizontal lines, to try to make it more clear where an example starts and ends.  It is the case, however, that sometimes floating environments interrupt them.
 %
+% \subsection{Environments}
 %
+% \DescribeEnv{cprulesetfloat}
+% Container for a |cpruleset|.  The |cprulesetfloat| wraps a |cpruleset| and provides it with the capability to float in the document, in much the same fashion as image and tables typically do.  It also provides the ability to caption the environment, and provide it with a label for cross-referencing purposes.  These latter are done in the exact same way as with an \Verb+\includegraphics{}+ environment from the \texttt{graphicx} package.  Furthermore, it works with the \texttt{hyperref} package's \Verb+\autoref{}+ command, supplying the environment's number, and the name `Ruleset'.
+% 
+% \noindent
+% \DescribeEnv{cpobjectsfloat}
+% Container for a |cpobjects|.  The |cpobjectsfloat| wraps a |cpobjects| and provides it with the capability to float in the document, in much the same fashion as image and tables typically do.  It also provides the ability to caption the environment, and provide it with a label for cross-referencing purposes.  These latter are done in the exact same way as with an \Verb+\includegraphics{}+ environment from the \texttt{graphicx} package.  Furthermore, it works with the \texttt{hyperref} package's \Verb+\autoref{}+ command, supplying the environment's number, and the name `Objects Group'.
+% 
+% \noindent
 % \DescribeEnv{cpruleset}
-%  Goes inside a |cprulesetfloat|
-%
+%  Goes inside a |cprulesetfloat|.  This provides the surrounding environment that |cprule|s, |cppromoter|s and |cpinhibitor|s are written inside.  It ensures that the appropriate maths mode is active inside itself, as well as providing the array structure that the rules are set inside and drawing a box around the whole thing.  Note that the text and box can become misaligned if they bump into the edge of a page.  It seems to be common for the box to break over the two pages and stay inside the usual margins, but the text just carries on as it pleases, going right outside the margins.  For this reason, as well as the aforementioned benefits, it is strongly recommended that you always place a |cpruleset| inside a |cprulesetfloat|.
+%  
+% \noindent
 % \DescribeEnv{cpobjects}
+% Goes inside a |cpobjectsfloat|.  This provides the surrounding environment that |cpobjectline|s are written inside.  It ensures that the appropriate maths mode is active inside itself, as well as drawing a box around the whole thing.  Note that the text and box can become misaligned if they bump into the edge of a page.  It seems to be common for the box to break over the two pages and stay inside the usual margins, but the text just carries on as it pleases, going right outside the margins.  For this reason, as well as the aforementioned benefits, it is strongly recommended that you always place a |cpobjects| inside a |cpobjectsfloat|.
 %
+% \subsection{Macros}
+% 
+% Brief descriptions of the rules and their use are provided here for reference purposes, but it is recommended that you take a look at \autoref{sect:fulleg} for examples on how to use them properly.
 %
+% \noindent
 % \DescribeMacro{\cprule}
 % |\cprule| \marg{Starting state} \marg{Input objects} \marg{Mode of operation} \marg{Ending state} \marg{Output objects}
+% 
+% Goes inside a |cpruleset| environment.  This is used to write out individual rules, and takes five mandatory arguments.  They are, in order, the starting state for the rule; the set of objects that are matched on and consumed by the rule; the parallelism mode specifier (currently \(+\) and \(1\) are standard for maximum and minimum parallelism); the ending state for the rule;  the objects that are output at the end of the rule.
+% 
+% E.g. a rule to move a single \(a\) out of a \(b\) functor might be written like:\\ \Verb+\cprule{s_1}{b(aa)}{1}{s_1}{b(a)~a}+ 
 %
+% \noindent
 % \DescribeMacro{\cppromoter}
+% |\cppromoter| \marg{The promoting cP~systems object}
+% 
+% Goes immediately beneath a |cprule|, |cpinhibitor| or another |cppromoter|.  This command takes a single argument, which is the term(s) to be written out as a promoter for a rule.
 %
-%
+% \noindent
 % \DescribeMacro{\cpinhibitor}
+% |\cpinhibitor| \marg{The inhibiting cP~systems object}
+% 
+% Goes immediately beneath a |cprule|, |cpinhibitor| or another |cppromoter|.  This command takes a single argument, which is the term(s) to be written out as a inhibitor for a rule.
 %
-%
+% \noindent
 % \DescribeMacro{\cpsend}
+% |\cpsend| \marg{The object(s) to be sent} \marg{The name of the channel over which to send the object(s)}
+% 
+% Goes inside a |cprule|.  This is as a convenience for writing out parts of rules where one or more objects are sent over a channel.  This macro abstracts over the slightly fiddly details of writing it out.  This command takes two arguments.  The first is the object(s) to be sent, and the second is the name of the channel (as it appears to the current top-level cell) the object(s) are to be sent over.
 %
-%
+% \noindent
 % \DescribeMacro{\cprecv}
+% |\cprecv| \marg{The pattern of the object(s) to be received} \marg{The name of the channel over which to receive the object(s)}
+% 
+% Goes inside a |cprule|.  This is as a convenience for writing out parts of rules where one or more objects are received over a channel.  This macro abstracts over the slightly fiddly details of writing it out.  This command takes two arguments.  The first is the object(s) to be received, and the second is the name of the channel (as it appears to the current top-level cell) the object(s) are to be received over.
+% 
+% Note, of course, that if an object is sent to the current top-level either using a non-existent channel or a pattern that is not specified by any receiving rule in the system, that object will not be retrieved from the channel by the current top-level cell.
 %
-%
+% \noindent
 % \DescribeMacro{\cpfunc}
+% |\cpfunc| \marg{Outer functor} \marg{Contents of functor}
+% 
+% Typically used inside a |cprule|, though so long as it is used inside a maths mode environment of some sort (e.g. \Verb+\(__\)+ or\Verb+\ensuremath{}+) it should still work.  This command is used to write out a functor and its contents, where the first argument is the name of the containing functor and the second argument is everything that is contained inside the functor.  They can, of course, be nested.
 %
+% In general, experience suggests that it is best to use |\cpfunc| when a functor will contain greater complexity than a single variable or only atoms of the same type.  So, something like \(a(A)\) would be typeset simply as \Verb+\(a(A)\)+ and \(c(ddddd)\) as \Verb+\(c(ddddd)\)+, whereas \ensuremath{\cpfunc{b}{c(C)~d(D)~ee~fff}} should probably be written as\\
+%  \Verb+\ensuremath{\cpfunc{b}{c(C)~d(D)~ee~fff}}+.
+%  
+%  Do note also, that the size of the parentheses around a |\cpfunc| are slightly enlarged from the usual, using the \Verb+\big+ bracket modifier.  This is mostly only noticeable if one looks closely, but it does seem to make it easier to spot where the containing functor closes, as compared to its contents.
 %
+% \noindent
 % \DescribeMacro{\cpobjectsline}
+% |\cpobjectsline| \marg{cP~systems objects to be presented as contained within that particular top-level cell}
+% 
+% Goes inside a |cpobjects| environment.  Used to set out a full line of inert objects that will be inside a top-level cell.  Note that, despite what one may initially assume, there is \emph{no} included ability (currently) for this to re-flow objects across lines.  It is up to the author to break up their listing of objects appropriately into separate lines.
 %
-%
+% \noindent
 % \DescribeMacro{\cpterm}
+% A full description and examples for this item are to come.
+% 
+% 
+% \subsection{\label{sect:fulleg}Full examples}
+% 
+% \subsubsection{A floating cP~systems ruleset}
+% 
+% For example, to typeset the ruleset for the solution to the Travelling Salesman Problem in \cite{Cooper2019}, depicted here in \autoref{rules:TSP}, the following was used:\footnote{The reference to the given label was in turn created using \verb+\autoref{rules:TSP}+, with \texttt{autoref} coming from the \texttt{hyperref} package.}
+% 
+% \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce \autoref{rules:TSP},tabsize=2]
+% \begin{cprulesetfloat}
+% 	\begin{cpruleset}
+% 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
+% 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
+% 	
+% 		\cprule{s_2}{\cpfunc{s}{r(R)~u()~\cpfunc{p}{h(F)p(P)}~c(C)}}
+% 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
+% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%	
+% 		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z)~
+% 		\cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}~c(CW)}}
+% 		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
+% 		\cpfunc{p}{h(F) p(P)}~c(C)}}
+% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+% 	
+% 		\cprule{s_2}{s(\_)}{+}{s_2}{}
+% 	
+% 		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
+% 		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
+% 		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+% 	
+% 	 \end{cpruleset}
+% 	 \caption{\label{rules:TSP} The five rules from \cite{Cooper2019},
+% 	  updated to the latest (at the time of writing) style for cP~systems.}
+% \end{cprulesetfloat}
+% \end{Verbatim}
+% 
+%  \begin{cprulesetfloat}
+% 	\begin{cpruleset}
+% 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
+% 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
+% 		
+% 		\cprule{s_2}{\cpfunc{s}{r(R)~u()~\cpfunc{p}{h(F)p(P)}~c(C)}}
+% 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
+% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		
+%		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z)~
+%		\cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}~c(CW)}}
+%		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
+%		\cpfunc{p}{h(F) p(P)}~c(C)}}
+%		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		
+%		\cprule{s_2}{s(\_)}{+}{s_2}{}
+%		
+%		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
+%		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
+%		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
 %
+% 	\end{cpruleset}
+% 	\caption{\label{rules:TSP} The five rules from \cite{Cooper2019},
+% 	 updated to the latest (at the time of writing) style for cP~systems.}
+% \end{cprulesetfloat}
+% 
+% There is, however, an extremely obvious problem with \autoref{rules:TSP} -- much of it extends beyond the box.  That is partly a product of the narrow margins for the main text body of the current document class, but with rules of any real length this is an inevitability really, if the entire thing is set onto a single line.  The solution, therefore, is to split the wider parts over multiple lines, thereby permitting the array to narrow each individual field, and thus fit everything inside the box.  Unfortunately, at present there is no \emph{good} way to do this.  The way to achieve it is simply to include a line break (i.e. \Verb+\\+) and then an appropriate number of ampersands (\&) to bring the array back into alignment, as demonstrated in \autoref{rules:TSP2}.  It is important (and sometimes slightly tricky) to get the number of ampersands exactly correct.  The wrong number can lead to either errors from the \LaTeX{} compiler and/or part of a rule appearing in a different column to the intended one.
+% 
+% \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce \autoref{rules:TSP2},tabsize=2]
+% \begin{cprulesetfloat}
+% 	\begin{cpruleset}
+% 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
+% 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
+% 		
+% 		\cprule{s_2}{\cpfunc{s}{r(R)~u() \\ & \cpfunc{p}{h(F)p(P)} \\ & c(C)}}
+% 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
+% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+% 		
+% 		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \\
+% 		& & & & \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
+% 		\\ & & & & c(CW)}}
+% 		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
+% 		\cpfunc{p}{h(F) p(P)}~c(C)}}
+% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+% 		
+% 		\cprule{s_2}{s(\_)}{+}{s_2}{}
+% 		
+% 		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
+% 		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
+% 		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+% 
+% 	\end{cpruleset}
+% 	\caption{\label{rules:TSP2} The five rules from \cite{Cooper2019},
+% 	 updated to the latest (at the time of writing) style for cP~systems
+% 	  -- rewritten to make it fit inside the box.}
+% \end{cprulesetfloat}
+% \end{Verbatim}
+% 
+% \begin{cprulesetfloat}
+% 	\begin{cpruleset}
+% 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
+% 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
+% 		
+% 		\cprule{s_2}{\cpfunc{s}{r(R)~u() \\ & \cpfunc{p}{h(F)p(P)} \\ & c(C)}}
+% 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
+% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		
+%		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \\
+%		& & & & \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
+%		\\ & & & & c(CW)}}
+%		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
+%		\cpfunc{p}{h(F) p(P)}~c(C)}}
+%		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		
+%		\cprule{s_2}{s(\_)}{+}{s_2}{}
+%		
+%		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
+%		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
+%		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
 %
+% 	\end{cpruleset}
+% 	\caption{\label{rules:TSP2} The five rules from \cite{Cooper2019},
+% 	 updated to the latest (at the time of writing) style for cP~systems
+% 	  -- rewritten to make it fit inside the box.}
+% \end{cprulesetfloat}
+% 
+% Notice that the numbering of the rules in \autoref{rules:TSP2} carries on from those in the previous |cpruleset|, \autoref{rules:TSP}.
+% 
+% \newpage This page has been left blank intentionally (excepting any floats that may end up here).  You'll see why in a moment.  \newpage \vspace*{0.1\textheight}
+% 
+% \subsubsection{A sinking ruleset}
+% 
+% If, for some reason, you \emph{don't} want your ruleset floating, or to have a caption or label, you dont actually need to use the |cprulesetfloat| environment.  |cpruleset| is all you need for laying out rules.  Just, the results probably won't be as good:
+% 
+% \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce the unlabelled non-floating cpruleset,tabsize=2]
+% \begin{cpruleset}
+% 	\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
+% 	\cpfunc{p}{h(R)p()}}~c(\lambda)}
+% 	
+% 	\cprule{s_2}{\cpfunc{s}{r(R)~u() \\ & \cpfunc{p}{h(F)p(P)} \\ & c(C)}}
+% 	{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
+% 	\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%	
+%	\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \\
+%	& & & & \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
+%	\\ & & & & c(CW)}}
+%	\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
+%	\cpfunc{p}{h(F) p(P)}~c(C)}}
+%	\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		
+%	\cprule{s_2}{s(\_)}{+}{s_2}{}
+%		
+%	\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
+%	\cppromoter{\cpfunc{z}{p(P~c(1D)}}
+%	\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+%
+% \end{cpruleset}
+% \end{Verbatim}
+% 
+%\begin{cpruleset}
+%	\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
+%	\cpfunc{p}{h(R)p()}}~c(\lambda)}
+%	
+%	\cprule{s_2}{\cpfunc{s}{r(R)~u() \\ & \cpfunc{p}{h(F)p(P)} \\ & c(C)}}
+%	{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
+%	\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%
+%	\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \\
+%	& & & & \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
+%	\\ & & & & c(CW)}}
+%	\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
+%	\cpfunc{p}{h(F) p(P)}~c(C)}}
+%	\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%	
+%	\cprule{s_2}{s(\_)}{+}{s_2}{}
+%	
+%	\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
+%	\cppromoter{\cpfunc{z}{p(P~c(1D)}}
+%	\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+%
+% \end{cpruleset}
+%
+% This has been carefully constructed to reveal another problem with this approach.  Without the floating environment, the ruleset is printed essentially exactly where it was declared, with the box of the |cpruleset| mostly printing on one page, but breaking and starting again on the next, but the text contained inside the environment is shifted down, overflowing the normal bottom margin for the main text.  I.e. the two become out-of-sync.  In this instance, whitespace was played around with to ensure this would happen (which is why an earlier page was left blank intentionally), but it happened by chance in an earlier draft of this documentation.
+% 
+% \subsubsection{Sending and receiving}
+% 
+% \subsubsection{Listings of objects}
+% Listing the objects contained within a top-level cP~systems cell is a fairly common activity, especially when writing out examples of the operation of usage for a given system.  Thus, this package includes some assistance for writing those out, also.  The style is derived from that used in other recent papers.
+% 
+% The procedure is much the same as for a |cpruleset|, in that a |cpobjects| is encapsulated inside a |cpobjectsfloat|.  The former creates the environment and box for the objects to be typeset in, while the latter wraps that in a floating environment that provides floating, captioning and cross-referencing capabilities.  Again borrowing an example from \cite{Cooper2019} (specifically Figure 7), \autoref{obj:fig7} is implemented as:
+% 
+% \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce \autoref{obj:fig7},tabsize=2]
+% \begin{cpobjectsfloat}
+% 	\begin{cpobjects}
+% 		\cpobjectsline{\cpfunc{e}{f(1)~t(2)~w(1)}
+% 		\quad \cpfunc{e}{f(1)~t(3)~w(3)}
+% 		\quad \cpfunc{e}{f(1)~t(5)~w(2)}
+% 		\quad \cpfunc{e}{f(2)~t(1)~w(1)}}
+% 		\cpobjectsline{\cpfunc{e}{f(2)~t(4)~w(6)} 
+% 		\quad \cpfunc{e}{f(2)~t(5)~w(4)}
+% 		\quad \cpfunc{e}{f(3)~t(1)~w(3)}
+% 		\quad \cpfunc{e}{f(3)~t(4)~w(8)}}
+% 		\cpobjectsline{\cpfunc{e}{f(3)~t(5)~w(5)}
+% 		\quad \cpfunc{e}{f(4)~t(2)~w(6)}
+% 		\quad \cpfunc{e}{f(4)~t(3)~w(8)} 
+% 		\quad \cpfunc{e}{f(4)~t(5)~w(7)}}
+% 		\cpobjectsline{\cpfunc{e}{f(5)~t(1)~w(2)} 
+% 		\quad \cpfunc{e}{f(5)~t(2)~w(4)}
+% 		\quad \cpfunc{e}{f(5)~t(3)~w(5)} 
+% 		\quad \cpfunc{e}{f(5)~t(4)~w(7)}}
+% 		\cpobjectsline{\cpfunc{v}{v(1)\,v(2)\,v(3)\,v(4)\,v(5)}}
+% 	\end{cpobjects}
+% 	\caption{\label{obj:fig7} The first example of an objects group}
+% \end{cpobjectsfloat}
+% \end{Verbatim}
+% 
+% \begin{cpobjectsfloat}
+% 	\begin{cpobjects}
+% 		\cpobjectsline{\cpfunc{e}{f(1)~t(2)~w(1)}
+% 		\quad \cpfunc{e}{f(1)~t(3)~w(3)}
+% 		\quad \cpfunc{e}{f(1)~t(5)~w(2)}
+% 		\quad \cpfunc{e}{f(2)~t(1)~w(1)}}
+% 		\cpobjectsline{\cpfunc{e}{f(2)~t(4)~w(6)} 
+% 		\quad \cpfunc{e}{f(2)~t(5)~w(4)}
+% 		\quad \cpfunc{e}{f(3)~t(1)~w(3)}
+% 		\quad \cpfunc{e}{f(3)~t(4)~w(8)}}
+% 		\cpobjectsline{\cpfunc{e}{f(3)~t(5)~w(5)}
+% 		\quad \cpfunc{e}{f(4)~t(2)~w(6)}
+% 		\quad \cpfunc{e}{f(4)~t(3)~w(8)} 
+% 		\quad \cpfunc{e}{f(4)~t(5)~w(7)}}
+% 		\cpobjectsline{\cpfunc{e}{f(5)~t(1)~w(2)} 
+% 		\quad \cpfunc{e}{f(5)~t(2)~w(4)}
+% 		\quad \cpfunc{e}{f(5)~t(3)~w(5)} 
+% 		\quad \cpfunc{e}{f(5)~t(4)~w(7)}}
+% 		\cpobjectsline{\cpfunc{v}{v(1)\,v(2)\,v(3)\,v(4)\,v(5)}}
+% 	\end{cpobjects}
+% 	\caption{\label{obj:fig7} The first example of an objects group}
+% \end{cpobjectsfloat}
+% 
+% It is unclear why the first line in the \autoref{obj:fig7} appears to have a wider space between it and the next line as compared to the following lines -- this has not been observed elsewhere.  This can be overcome by including a blank |\cpobjectsline{}| at the top of the |cpobjects| environment, but that then leaves a larger gap between the top of the box and the start of the objects.
+% 
 % \StopEventually{\PrintIndex}
 %
 % \section{Implementation}
@@ -257,20 +543,41 @@
 }
 %    \end{macrocode}
 % \end{macro}
-%
-%
+% 
 % \begin{macro}{\cpterm}
-% Explanation TBF
+% Explanation to be completed.
 %    \begin{macrocode}
-\newcommand\cpterm[2]{%
-\item[$#1$]#2.}%    \end{macrocode}
+\newcommand{\cpterm}[2]{
+	\item[$#1$]#2.
+}
+%    \end{macrocode}
 % \end{macro}
+% 
 %
-%
+% \section{Possible improvements}
+% A handful of possible improvements have been thought of already, though in most cases it is entirely unclear how to achieve them at this point.  They include:
+% \begin{itemize}
+% \item A command to create line breaks in |cpruleset| environments, without requiring the user to fill in all the \&s required by the contained |array| environment to make it work.
+% \item User-facing commands to reset the |cpsystems@RuleNum| counter, or set it to a particular number.
+% \item Make brackets automatically grow or shrink, depending on how highly-nested they are.
+% \item Commands to write an individual rule inline in text, or in a separate paragraph.  Either way, outside of a |cpruleset| environment.
+% \item The ability to specify an optional parameter to the |cpruleset| stating the desired amount of array stretch to use.  Currently it is hard-coded as \texttt{-1.0em}.
+% \item Provide the ability to specify a printed name for |cprulesetfloat| and |cpobjectsfloat| besides `Ruleset' and `Objects Group'.
+% \item Make the package available via CTAN.
+% \item Eliminate the extraneous symbols in the index (it is unclear why they are appearing, when they have been specifically excluded using the normal method for \texttt{.dtx} files).
+% \item Change the implementation of the package to using LaTeX3's approach.
+% \item Versions of |cpruleset| and |cpobjects| that \emph{don't} draw boxes around themselves.  Perhaps, e.g. |cprulset*|.
+% \item A way to break up one ruleset or objects group into multiple boxes and/or across multiple pages, cleanly.  Though, to be honest, if this is becoming an issue for a ruleset, it probably means that the ruleset has grown large enough that it could be logically split into subsets.  Objects groups may be a different story.
+% \end{itemize}
+% 
+% Note that there is absolutely no time-frame currently for the completion of any of these.
+% 
+% \bibliographystyle{acm}
+% \bibliography{cpsystems}
 %
 % \iffalse
 %</package>
 % \fi
 %
 % \Finale
-\endinput
+% 

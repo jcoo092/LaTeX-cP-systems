@@ -4,6 +4,7 @@
 #Except for the few things that I want included
 !cpsystems.ins
 !cpsystems.dtx
+!cpsystems.bib
 !cpsystems.sty
 !cpsystems.pdf
 !README.md
