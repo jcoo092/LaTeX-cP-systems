@@ -20,7 +20,7 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[2017/01/01]
 \ProvidesPackage{cpsystems}
-[2019/12/31 v0.12 Package to aid in typesetting cP systems
+[2020/01/04 v0.13 Package to aid in typesetting cP systems
 rulesets, following Nicolescu's standard style]
 
 \RequirePackage{array}
@@ -40,14 +40,16 @@ rulesets, following Nicolescu's standard style]
 \newenvironment{cpobjects}{\begin{framed}}{\end{framed}}
 \newcommand{\cprule}[5]{
     \refstepcounter{cpsystems@RuleNum}
-    \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5
-     & (\arabic{cpsystems@RuleNum})\\}
+    \cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{(\arabic{cpsystems@RuleNum})}
+}
+\newcommand{\cprulenonum}[5]{
+\cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{}
 }
 \newcommand{\cppromoter}[1]{
-\trim@spaces@noexp{& & & & ~ \hspace{0.5cm} ~ | ~ #1 & \\}
+\cpsystems@basecprule{}{}{}{}{~ \hspace{0.5cm} ~ | ~ #1}{}
 }
 \newcommand{\cpinhibitor}[1]{
-\trim@spaces@noexp{& & & & ~ \hspace{0.5cm} ~ \neg ~ #1 & \\}
+\cpsystems@basecprule{}{}{}{}{~ \hspace{0.5cm} ~ \neg ~ #1}{}
 }
 \newcommand{\cpsend}[2]{
 \trim@spaces@noexp{\{#1\}!_{#2}}
@@ -55,14 +57,24 @@ rulesets, following Nicolescu's standard style]
 \newcommand{\cprecv}[2]{
 \trim@spaces@noexp{\{#1\}?_{#2}}
 }
-\newcommand{\cpfunc}[2]{
-\trim@spaces@noexp{#1\big(#2\big)}
+\newcommand{\changerulenumber}[1]{
+\setcounter{cpsystems@RuleNum}{#1}
+}
+\newcommand{\resetrulenumber}{
+\setcounter{cpsystems@RuleNum}{0}
 }
 \newcommand{\cpobjectsline}[1]{
 \[#1\]
 }
+\newcommand{\cpfunc}[2]{
+\trim@spaces@noexp{#1\big(#2\big)}
+}
 \newcommand{\cpterm}[2]{
 \item[$#1$]#2.
+}
+\newcommand{\cpsystems@basecprule}[6]{
+    \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5
+     & #6\\}
 }
 \endinput
 %%
