@@ -43,13 +43,13 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[2017/01/01]
 %<package>\ProvidesPackage{cpsystems}
 %<*package>
-[2019/12/31 v0.12 Package to aid in typesetting cP systems 
+[2020/01/04 v0.13 Package to aid in typesetting cP systems 
 	rulesets, following Nicolescu's standard style]
 %</package>
 %
 %<*driver>
 \documentclass{ltxdoc}
-\usepackage{cpsystems}[2019/12/31 v0.12]
+\usepackage{cpsystems}[2020/01/04 v0.13]
 \usepackage{fancyvrb}
 \usepackage[hidelinks]{hyperref}
 \EnableCrossrefs
@@ -64,8 +64,8 @@
 %</driver>
 % \fi
 %
-%
-%\changes{0.12}{2019/12/31}{Completed documentation for first DTX format attempt}
+% \changes{0.13}{2020/01/04}{Added in the commands for \texttt{cprulenonum}, \texttt{changerulenum} and \texttt{resetrulenum}.  Modified the four major pre-existing rule typesetting macros all to use an internal macro, reducing duplication of code.  Also corrected a handful of typos in the document.}
+% \changes{0.12}{2019/12/31}{Completed documentation for first DTX format attempt}
 % \changes{0.11}{2019/12/27}{Converted to DTX file}
 %
 % \DoNotIndex{\[, \{, \], \}, \\}
@@ -86,6 +86,10 @@
 % \begin{abstract}
 %	A package to assist authors writing about cP~systems with typesetting their papers.  It comprises a handful of environments and macros that are intended to ease writing about cP~systems, and just as importantly, reduce the frequency of errors in the presentation.  It is recommended to all authors using \LaTeX{} to write about cP~systems.  Even if you don't want to use it, looking at the implementation details may give you some ideas for your own style.
 % \end{abstract}
+% 
+% \tableofcontents
+% 
+% \newpage
 %
 % \section{Introduction}
 % This is a package to assist authors in writing papers on cP~systems, a particular variant of P~systems that was created by Dr. Radu Nicolescu, along with a number of collaborators, in the early 2010s.  This document assumes you have a working knowledge of cP~systems and how they should look when fully typeset.  It makes no attempt to explain the theory of cP~systems, nor why they are set out in the fashion that they.  If you would like further information on cP~systems, please see \cite{Nicolescu2018}, or \cite{Paun2002} for an excellent (albeit somewhat old) introduction to P~systems generally.
@@ -99,6 +103,8 @@
 % This section firstly gives a brief overview of the individual usage of each command, and then supplies a few examples showing their combined use.  For the full examples, the verbatim \LaTeX{} code needed to typeset the corresponding example in each instance is bounded at the top and bottom by horizontal lines, to try to make it more clear where an example starts and ends.  It is the case, however, that sometimes floating environments interrupt them.
 %
 % \subsection{Environments}
+% 
+% \subsubsection{Floats}
 %
 % \DescribeEnv{cprulesetfloat}
 % Container for a |cpruleset|.  The |cprulesetfloat| wraps a |cpruleset| and provides it with the capability to float in the document, in much the same fashion as image and tables typically do.  It also provides the ability to caption the environment, and provide it with a label for cross-referencing purposes.  These latter are done in the exact same way as with an \Verb+\includegraphics{}+ environment from the \texttt{graphicx} package.  Furthermore, it works with the \texttt{hyperref} package's \Verb+\autoref{}+ command, supplying the environment's number, and the name `Ruleset'.
@@ -106,6 +112,8 @@
 % \noindent
 % \DescribeEnv{cpobjectsfloat}
 % Container for a |cpobjects|.  The |cpobjectsfloat| wraps a |cpobjects| and provides it with the capability to float in the document, in much the same fashion as image and tables typically do.  It also provides the ability to caption the environment, and provide it with a label for cross-referencing purposes.  These latter are done in the exact same way as with an \Verb+\includegraphics{}+ environment from the \texttt{graphicx} package.  Furthermore, it works with the \texttt{hyperref} package's \Verb+\autoref{}+ command, supplying the environment's number, and the name `Objects Group'.
+% 
+% \subsubsection{Maths environment floats}
 % 
 % \noindent
 % \DescribeEnv{cpruleset}
@@ -118,6 +126,8 @@
 % \subsection{Macros}
 % 
 % Brief descriptions of the rules and their use are provided here for reference purposes, but it is recommended that you take a look at \autoref{sect:fulleg} for examples on how to use them properly.
+% 
+% \subsubsection{Rules}
 %
 % \noindent
 % \DescribeMacro{\cprule}
@@ -126,6 +136,12 @@
 % Goes inside a |cpruleset| environment.  This is used to write out individual rules, and takes five mandatory arguments.  They are, in order, the starting state for the rule; the set of objects that are matched on and consumed by the rule; the parallelism mode specifier (currently \(+\) and \(1\) are standard for maximum and minimum parallelism); the ending state for the rule;  the objects that are output at the end of the rule.
 % 
 % E.g. a rule to move a single \(a\) out of a \(b\) functor might be written like:\\ \Verb+\cprule{s_1}{b(aa)}{1}{s_1}{b(a)~a}+ 
+% 
+% \noindent
+% \DescribeMacro{\cprulenonum}
+% |\cprule| \marg{Starting state} \marg{Input objects} \marg{Mode of operation} \marg{Ending state} \marg{Output objects}
+% 
+% Goes inside a |cpruleset| environment.  Identical to a |\cprule|, except that this version neither shows a rule number, nor increments the rule counter.
 %
 % \noindent
 % \DescribeMacro{\cppromoter}
@@ -152,6 +168,28 @@
 % Goes inside a |cprule|.  This is as a convenience for writing out parts of rules where one or more objects are received over a channel.  This macro abstracts over the slightly fiddly details of writing it out.  This command takes two arguments.  The first is the object(s) to be received, and the second is the name of the channel (as it appears to the current top-level cell) the object(s) are to be received over.
 % 
 % Note, of course, that if an object is sent to the current top-level either using a non-existent channel or a pattern that is not specified by any receiving rule in the system, that object will not be retrieved from the channel by the current top-level cell.
+% 
+% \noindent
+% \DescribeMacro{\changerulenum}
+% |\changerulenum| \marg{The number to which you would like to set the rule counter}
+% 
+% Set the rules counter to whatever number you prefer.
+% 
+% \noindent
+% \DescribeMacro{\resetrulenum}
+% |\resetrulenum|
+% 
+% Resets the rules counter back to zero, which means that the next time you use a |\cprule|, that rule will receive the number 1.
+%  
+%  \subsubsection{Objects}
+%
+% \noindent
+% \DescribeMacro{\cpobjectsline}
+% |\cpobjectsline| \marg{cP~systems objects to be presented as contained within that particular top-level cell}
+% 
+% Goes inside a |cpobjects| environment.  Used to set out a full line of inert objects that will be inside a top-level cell.  Note that, despite what one may initially assume, there is \emph{no} included ability (currently) for this to re-flow objects across lines.  It is up to the author to break up their listing of objects appropriately into separate lines.
+% 
+% \subsubsection{Miscellaneous}
 %
 % \noindent
 % \DescribeMacro{\cpfunc}
@@ -163,12 +201,6 @@
 %  \Verb+\ensuremath{\cpfunc{b}{c(C)~d(D)~ee~fff}}+.
 %  
 %  Do note also, that the size of the parentheses around a |\cpfunc| are slightly enlarged from the usual, using the \Verb+\big+ bracket modifier.  This is mostly only noticeable if one looks closely, but it does seem to make it easier to spot where the containing functor closes, as compared to its contents.
-%
-% \noindent
-% \DescribeMacro{\cpobjectsline}
-% |\cpobjectsline| \marg{cP~systems objects to be presented as contained within that particular top-level cell}
-% 
-% Goes inside a |cpobjects| environment.  Used to set out a full line of inert objects that will be inside a top-level cell.  Note that, despite what one may initially assume, there is \emph{no} included ability (currently) for this to re-flow objects across lines.  It is up to the author to break up their listing of objects appropriately into separate lines.
 %
 % \noindent
 % \DescribeMacro{\cpterm}
@@ -422,6 +454,8 @@
 % \iffalse
 %
 % \fi
+% 
+% \subsection{Preamble}
 %
 %    \begin{macrocode}
 %
@@ -435,6 +469,10 @@
 
 \newcounter{cpsystems@RuleNum}
 %    \end{macrocode}
+%    
+%    \subsection{Environments}
+%    
+%    \subsubsection{Floats}
 %
 % \begin{environment}{cprulesetfloat}
 % A floating environment inside which |cpruleset| environments are to be placed.  This `wrapping' float provides both the floating capability, as well the ability to caption, label and reference |cprulesets|.
@@ -449,6 +487,8 @@
 \DeclareFloatingEnvironment[name=Objects Group,within=none]{cpobjectsfloat}
 %    \end{macrocode}
 % \end{environment}
+% 
+% \subsubsection{Maths mode environments}
 %
 % \begin{environment}{cpruleset}
 % A wrapper environment in which |cprules| are listed, and which mimics the usual style of presentation for rules:  A lined box with the rules inside it.
@@ -467,36 +507,46 @@
 \newenvironment{cpobjects}{\begin{framed}}{\end{framed}}
 %    \end{macrocode}
 % \end{environment}
-%
-%
-% \begin{macro}{\cprule}
-% For writing out a rule inside a |cpruleset| environment.
+% 
+% \subsection{Macros}
+% 
+% \subsubsection{Rules}
+% 
+% % \begin{macro}{\cprule}
+% For writing out a rule inside a |cpruleset| environment, as well as displaying and incrementing the rule number.
 % Required arguments are, in order, beginning state name; LHS of rule; the label to be applied to the arrow; the ending state name; the RHS of the rule.
 %    \begin{macrocode}
 \newcommand{\cprule}[5]{
     \refstepcounter{cpsystems@RuleNum}
-    \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5 
-    	& (\arabic{cpsystems@RuleNum})\\}
+    \cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{(\arabic{cpsystems@RuleNum})}
 }
 %    \end{macrocode}
 % \end{macro}
-%
+% 
+% \begin{macro}{\cprulenonum}
+% 	Same as with a regular |\cprule|, but does not show or increment the rule counter.
+%    \begin{macrocode}
+\newcommand{\cprulenonum}[5]{
+	\cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{}
+}
+%    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{\cppromoter}
 % For specifying promoters as part of a rule.
 %    \begin{macrocode}
 \newcommand{\cppromoter}[1]{
-	\trim@spaces@noexp{& & & & ~ \hspace{0.5cm} ~ | ~ #1 & \\}
+	\cpsystems@basecprule{}{}{}{}{~ \hspace{0.5cm} ~ | ~ #1}{}
 }
 %    \end{macrocode}
 % \end{macro}
-%
+% 
 %
 % \begin{macro}{\cpinhibitor}
-%    \begin{macrocode}
 % For specifying inhibitors as part of a rule.
+%    \begin{macrocode}
 \newcommand{\cpinhibitor}[1]{
-	\trim@spaces@noexp{& & & & ~ \hspace{0.5cm} ~ \neg ~ #1 & \\}
+	\cpsystems@basecprule{}{}{}{}{~ \hspace{0.5cm} ~ \neg ~ #1}{}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -522,17 +572,28 @@
 }
 %    \end{macrocode}
 % \end{macro}
-%
-%
-% \begin{macro}{\cpfunc}
-% Command for declaring a cP~systems functor.
-% The first argument is the symbol for the functor itself, and the second argument is the objects contained inside the functor.
+% 
+% % \begin{macro}{\changerulenumber}
+% Change the rules counter to whatever positive integer you specify.
+% There's likely an upper limit to what numbers you can set (and you may even be able to use negative numbers (you'd have to look into the details of \LaTeX{}/\TeX{}'s counter system to be sure)), but that number has not been found as of yet, and is probably higher than the number of rules you should include in any one paper.
 %    \begin{macrocode}
-\newcommand{\cpfunc}[2]{
-	\trim@spaces@noexp{#1\big(#2\big)}
+\newcommand{\changerulenumber}[1]{
+	\setcounter{cpsystems@RuleNum}{#1}
+}
+%    \end{macrocode}
+% \end{macro} 
+% 
+% 
+% \begin{macro}{\resetrulenumber}
+% Reset the rules counter, i.e. make it zero again, so that the next rule in the document will receive the number 1.
+%    \begin{macrocode}
+\newcommand{\resetrulenumber}{
+	\setcounter{cpsystems@RuleNum}{0}
 }
 %    \end{macrocode}
 % \end{macro}
+% 
+% \subsubsection{Objects Groups}
 %
 %
 % \begin{macro}{\cpobjectsline}
@@ -540,6 +601,18 @@
 %    \begin{macrocode}
 \newcommand{\cpobjectsline}[1]{
 	\[#1\]
+}
+%    \end{macrocode}
+% \end{macro}
+% 
+% \subsubsection{Miscellaneous}
+%
+% \begin{macro}{\cpfunc}
+% Command for declaring a cP~systems functor.
+% The first argument is the symbol for the functor itself, and the second argument is the objects contained inside the functor.
+%    \begin{macrocode}
+\newcommand{\cpfunc}[2]{
+	\trim@spaces@noexp{#1\big(#2\big)}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -553,12 +626,24 @@
 %    \end{macrocode}
 % \end{macro}
 % 
+% \subsection{Internal}
+% Macros that are only intended to be used inside the package, and probably shouldn't be used outside of it.  Much as if the previous macros are all the public interface of the package, while these ones are the private implementation details.
+% 
+% \begin{macro}{\cpsystems@basecprule}
+% For writing out rules inside a |cpruleset| environment.
+% Required arguments are, in order, beginning state name; LHS of rule; the label to be applied to the arrow; the ending state name; the RHS of the rule.
+%    \begin{macrocode}
+\newcommand{\cpsystems@basecprule}[6]{
+    \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5 
+    	& #6\\}
+}
+%    \end{macrocode}
+% \end{macro}
 %
 % \section{Possible improvements}
 % A handful of possible improvements have been thought of already, though in most cases it is entirely unclear how to achieve them at this point.  They include:
 % \begin{itemize}
 % \item A command to create line breaks in |cpruleset| environments, without requiring the user to fill in all the \&s required by the contained |array| environment to make it work.
-% \item User-facing commands to reset the |cpsystems@RuleNum| counter, or set it to a particular number.
 % \item Make brackets automatically grow or shrink, depending on how highly-nested they are.
 % \item Commands to write an individual rule inline in text, or in a separate paragraph.  Either way, outside of a |cpruleset| environment.
 % \item The ability to specify an optional parameter to the |cpruleset| stating the desired amount of array stretch to use.  Currently it is hard-coded as \texttt{-1.0em}.
@@ -566,7 +651,7 @@
 % \item Make the package available via CTAN.
 % \item Eliminate the extraneous symbols in the index (it is unclear why they are appearing, when they have been specifically excluded using the normal method for \texttt{.dtx} files).
 % \item Change the implementation of the package to using LaTeX3's approach.
-% \item Versions of |cpruleset| and |cpobjects| that \emph{don't} draw boxes around themselves.  Perhaps, e.g. |cprulset*|.
+% \item Versions of |cpruleset| and |cpobjects| that \emph{don't} draw boxes around themselves.  Perhaps, e.g. |cpruleset*|.
 % \item A way to break up one ruleset or objects group into multiple boxes and/or across multiple pages, cleanly.  Though, to be honest, if this is becoming an issue for a ruleset, it probably means that the ruleset has grown large enough that it could be logically split into subsets.  Objects groups may be a different story.
 % \end{itemize}
 % 
