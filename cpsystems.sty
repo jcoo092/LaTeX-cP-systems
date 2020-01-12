@@ -18,9 +18,9 @@
 %% and version 1.3 or later is part of all distributions of LaTeX
 %% version 2005/12/01 or later.
 %% 
-\NeedsTeXFormat{LaTeX2e}[2017/01/01]
+\NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{cpsystems}
-[2020/01/04 v0.13 Package to aid in typesetting cP systems
+[2020/01/12 v0.13.1 Package to aid in typesetting cP systems
 rulesets, following Nicolescu's standard style]
 
 \RequirePackage{array}
@@ -46,10 +46,10 @@ rulesets, following Nicolescu's standard style]
 \cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{}
 }
 \newcommand{\cppromoter}[1]{
-\cpsystems@basecprule{}{}{}{}{~ \hspace{0.5cm} ~ | ~ #1}{}
+\cpsystems@cpprominhi{|}{#1}
 }
 \newcommand{\cpinhibitor}[1]{
-\cpsystems@basecprule{}{}{}{}{~ \hspace{0.5cm} ~ \neg ~ #1}{}
+\cpsystems@cpprominhi{\neg}{#1}
 }
 \newcommand{\cpsend}[2]{
 \trim@spaces@noexp{\{#1\}!_{#2}}
@@ -75,6 +75,9 @@ rulesets, following Nicolescu's standard style]
 \newcommand{\cpsystems@basecprule}[6]{
     \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5
      & #6\\}
+}
+\newcommand{\cpsystems@cpprominhi}[2]{
+    \trim@spaces@noexp{& & & & ~ \hspace{0.5cm} ~ #1 ~ #2 & \\}
 }
 \endinput
 %%

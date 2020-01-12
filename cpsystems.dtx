@@ -40,16 +40,16 @@
 %<*driver>
 \ProvidesFile{cpsystems.dtx}
 %</driver>
-%<package>\NeedsTeXFormat{LaTeX2e}[2017/01/01]
+%<package>\NeedsTeXFormat{LaTeX2e}
 %<package>\ProvidesPackage{cpsystems}
 %<*package>
-[2020/01/04 v0.13 Package to aid in typesetting cP systems 
+[2020/01/12 v0.13.1 Package to aid in typesetting cP systems 
 	rulesets, following Nicolescu's standard style]
 %</package>
 %
 %<*driver>
 \documentclass{ltxdoc}
-\usepackage{cpsystems}[2020/01/04 v0.13]
+\usepackage{cpsystems}[2020/01/12 v0.13.1]
 \usepackage{fancyvrb}
 \usepackage[hidelinks]{hyperref}
 \EnableCrossrefs
@@ -64,6 +64,7 @@
 %</driver>
 % \fi
 %
+% \changes{0.13.1}{2020/01/12}{Fix problem with arrows appearing in the \texttt{cppromoter} and \texttt{cpinhibitor} results.}
 % \changes{0.13}{2020/01/04}{Added in the commands for \texttt{cprulenonum}, \texttt{changerulenum} and \texttt{resetrulenum}.  Modified the four major pre-existing rule typesetting macros all to use an internal macro, reducing duplication of code.  Also corrected a handful of typos in the document.}
 % \changes{0.12}{2019/12/31}{Completed documentation for first DTX format attempt}
 % \changes{0.11}{2019/12/27}{Converted to DTX file}
@@ -536,7 +537,7 @@
 % For specifying promoters as part of a rule.
 %    \begin{macrocode}
 \newcommand{\cppromoter}[1]{
-	\cpsystems@basecprule{}{}{}{}{~ \hspace{0.5cm} ~ | ~ #1}{}
+	\cpsystems@cpprominhi{|}{#1}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -546,7 +547,7 @@
 % For specifying inhibitors as part of a rule.
 %    \begin{macrocode}
 \newcommand{\cpinhibitor}[1]{
-	\cpsystems@basecprule{}{}{}{}{~ \hspace{0.5cm} ~ \neg ~ #1}{}
+	\cpsystems@cpprominhi{\neg}{#1}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -636,6 +637,15 @@
 \newcommand{\cpsystems@basecprule}[6]{
     \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5 
     	& #6\\}
+}
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\cpsystems@cpprominhi}
+% For writing out promoters and inhibitors in a |cpruleset| environment.
+%    \begin{macrocode}
+\newcommand{\cpsystems@cpprominhi}[2]{
+    \trim@spaces@noexp{& & & & ~ \hspace{0.5cm} ~ #1 ~ #2 & \\}
 }
 %    \end{macrocode}
 % \end{macro}
