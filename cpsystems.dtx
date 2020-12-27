@@ -1,7 +1,7 @@
 % \iffalse meta-comment
 % !TEX program  = pdfLaTeX
 %
-% Copyright (C) 2019 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
+% Copyright (C) 2020 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
 % ---------------------------------------------------------------------------
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3
@@ -22,7 +22,7 @@
 % \iffalse
 %<*readme>
 %%cpsystems LaTeX package
-%%Copyright (C) 2019 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
+%%Copyright (C) 2020 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
 %%
 %%The goal of this work is to provide a self-contained, easy-to-use LaTeX package that eases the typesetting of cP systems, a variant of Membrane Computing/P systems created by Dr. Radu Nicolescu and collaborators in the early 2010s.  Please refer to the package documentation for instructions on its use.  To the best of my knowledge, it is compatible with all LaTeX2e distributions which are reasonably up-to-date, as well as all classes (and likely all or almost all packages) that are typically used for publishing material on P systems.
 %%
@@ -43,13 +43,13 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[2011/06/27]
 %<package>\ProvidesPackage{cpsystems}
 %<*package>
-[2020/12/27 v0.14 Package to aid in typesetting cP systems 
+[2020/12/27 v0.15 Package to aid in typesetting cP systems 
 	rulesets, following Nicolescu's standard style]
 %</package>
 %
 %<*driver>
 \documentclass{ltxdoc}
-\usepackage{cpsystems}[2020/12/27 v0.14]
+\usepackage{cpsystems}[2020/12/27 v0.15]
 \usepackage{fancyvrb}
 \usepackage[hidelinks]{hyperref}
 \EnableCrossrefs
@@ -64,6 +64,7 @@
 %</driver>
 % \fi
 %
+% \changes{0.15}{2020/12/27}{Introduced use of perfectcut to provide automatically-resizing brackets.  Also added an explanation and example for \texttt{cpterm}.  Unfortunately, this also breaks linebreaks inside \texttt{cpfunc} macros for the time being...}
 % \changes{0.14}{2020/12/27}{Add minimum LaTeX2e version to package specification.  Change many of the \texttt{newcommand} declarations to use the \texttt{newcommand*} style, making them ``short commands'', which (apparently) throw warnings if there is a paragraph break detected in their use -- the ones modified aren't expected to have paragraph breaks in them.  Also, added in the \texttt{cps}, \texttt{cpundig} and \texttt{cpempty} convenience macros.}  
 % \changes{0.13.1}{2020/01/12}{Fix problem with arrows appearing in the \texttt{cppromoter} and \texttt{cpinhibitor} results.}
 % \changes{0.13}{2020/01/04}{Added in the commands for \texttt{cprulenonum}, \texttt{changerulenum} and \texttt{resetrulenum}.  Modified the four major pre-existing rule typesetting macros all to use an internal macro, reducing duplication of code.  Also corrected a handful of typos in the document.}
@@ -73,7 +74,7 @@
 % \DoNotIndex{\[, \{, \], \}, \\}
 %
 % \DoNotIndex{\arabic, \arraystretch, \begin, \big, \DeclareFloatingEnvironment,\end,\hspace,\item,\NeedsTeXFormat,\neg,\newcommand,\newcounter,
-%	\newenvironment,\ProvidesPackage,\refstepcounter,\renewcommand,\RequirePackage,\rightarrow,\trim@spaces@noexp,\mathit,\lambda}
+%	\newenvironment,\ProvidesPackage,\refstepcounter,\renewcommand,\RequirePackage,\rightarrow,\trim@spaces@noexp,\mathit,\lambda,\perfectunary}
 %
 % \providecommand*{\url}{\texttt}
 % \GetFileInfo{cpsystems.dtx}
@@ -197,16 +198,13 @@
 % \DescribeMacro{\cpfunc}
 % |\cpfunc| \marg{Outer functor} \marg{Contents of functor}
 % 
-% Typically used inside a |cprule|, though so long as it is used inside a maths mode environment of some sort (e.g. \Verb+\(__\)+ or\Verb+\ensuremath{}+) it should still work.  This command is used to write out a functor and its contents, where the first argument is the name of the containing functor and the second argument is everything that is contained inside the functor.  They can, of course, be nested.
+% Typically used inside a |cprule|, though so long as it is used inside a maths mode environment of some sort (e.g. \Verb+\(\_\)+ or\Verb+\ensuremath{}+) it should still work.  This command is used to write out a functor and its contents, where the first argument is the name of the containing functor and the second argument is everything that is contained inside the functor.  They can, of course, be nested -- in fact, this is encouraged.  The implementation of |cpfunc| \emph{should} ensure that the brackets will scale appropriately automatically, so that outer functors have larger brackets than inner ones.
 %
-% In general, experience suggests that it is best to use |\cpfunc| when a functor will contain greater complexity than a single variable or only atoms of the same type.  So, something like \(a(A)\) would be typeset simply as \Verb+\(a(A)\)+ and \(c(ddddd)\) as \Verb+\(c(ddddd)\)+, whereas \ensuremath{\cpfunc{b}{c(C)~d(D)~ee~fff}} should probably be written as\\
-%  \Verb+\ensuremath{\cpfunc{b}{c(C)~d(D)~ee~fff}}+.
-%  
-%  Do note also, that the size of the parentheses around a |\cpfunc| are slightly enlarged from the usual, using the \Verb+\big+ bracket modifier.  This is mostly only noticeable if one looks closely, but it does seem to make it easier to spot where the containing functor closes, as compared to its contents.
+% Line breaking is currently, er, broken in this implementation.  It didn't play well with the auto-growing brackets.  |\\| is completely unusable inside a |cpfunc|.  |\linebreak| and |\newline| can be included, but seem to do absolutely nothing.  If you have any |&|s for marking out columns, they seem to cause compilation errors and should be removed.  It is unclear at the moment how to restore this functionality, but this issue is why the examples below all spill well past the right-hand-side of their frames.
 %
 % \noindent
 % \DescribeMacro{\cpterm}
-% A full description and examples for this item are to come.
+% This command is used explain the meaning of a given cP systems term/symbol.  E.g. if you have a functor such as \(a(b)\), you might use |\cpterm| entries to explain the meanings of both the \(a\) functor and \(b\) atom.  Note that the current implementation of this command automatically includes a full stop/period at the end of the description -- so if you include one inside the description, you will get a double dot.  It is generally recommended to encapsulate these definitions inside a |description| environment, which ends up with everything set out pretty well.  Further, separating out the atoms from the functors from the states is also recommended.  So far, using a |paragraph| command to give the relevant title to each one, followed by a |description| with the |cpterm|s inside that seems to work out pretty well.
 %
 % \noindent
 % \DescribeMacro{\cpundig}
@@ -235,22 +233,22 @@
 % 	\begin{cpruleset}
 % 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
 % 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
-% 	
+% 		
 % 		\cprule{s_2}{\cpfunc{s}{r(R)~u()~\cpfunc{p}{h(F)p(P)}~c(C)}}
 % 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
 % 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
-%	
-% 		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z)~
-% 		\cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}~c(CW)}}
-% 		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
-% 		\cpfunc{p}{h(F) p(P)}~c(C)}}
-% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
-% 	
-% 		\cprule{s_2}{s(\_)}{+}{s_2}{}
-% 	
-% 		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
-% 		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
-% 		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+%		
+%		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z)~
+%		\cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}~c(CW)}}
+%		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
+%		\cpfunc{p}{h(F) p(P)}~c(C)}}
+%		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		
+%		\cprule{s_2}{s(\_)}{+}{s_2}{}
+%		
+%		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
+%		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
+%		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
 % 	
 % 	 \end{cpruleset}
 % 	 \caption{\label{rules:TSP} The five rules from \cite{Cooper2019},
@@ -284,7 +282,7 @@
 % 	 updated to the latest (at the time of writing) style for cP~systems.}
 % \end{cprulesetfloat}
 % 
-% There is, however, an extremely obvious problem with \autoref{rules:TSP} -- much of it extends beyond the box.  That is partly a product of the narrow margins for the main text body of the current document class, but with rules of any real length this is an inevitability really, if the entire thing is set onto a single line.  The solution, therefore, is to split the wider parts over multiple lines, thereby permitting the array to narrow each individual field, and thus fit everything inside the box.  Unfortunately, at present there is no \emph{good} way to do this.  The way to achieve it is simply to include a line break (i.e. \Verb+\\+) and then an appropriate number of ampersands (\&) to bring the array back into alignment, as demonstrated in \autoref{rules:TSP2}.  It is important (and sometimes slightly tricky) to get the number of ampersands exactly correct.  The wrong number can lead to either errors from the \LaTeX{} compiler and/or part of a rule appearing in a different column to the intended one.
+% There is, however, an extremely obvious problem with \autoref{rules:TSP} -- much of it extends beyond the box.  That is partly a product of the narrow margins for the main text body of the current document class, but with rules of any real length this is an inevitability really, if the entire thing is set onto a single line.  The solution, therefore, is to split the wider parts over multiple lines, thereby permitting the array to narrow each individual field, and thus fit everything inside the box.  Unfortunately, at present there is no \emph{good} way to do this.  The way to achieve it is simply to include a line break (i.e. \Verb+\\+) and then an appropriate number of ampersands (\&) to bring the array back into alignment, as demonstrated in \autoref{rules:TSP2}.  It is important (and sometimes slightly tricky) to get the number of ampersands exactly correct.  The wrong number can either lead to errors from the \LaTeX{} compiler and/or part of a rule appearing in a different column to the intended one.
 % 
 % \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce \autoref{rules:TSP2},tabsize=2]
 % \begin{cprulesetfloat}
@@ -292,22 +290,22 @@
 % 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
 % 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
 % 		
-% 		\cprule{s_2}{\cpfunc{s}{r(R)~u() \\ & \cpfunc{p}{h(F)p(P)} \\ & c(C)}}
+% 		\cprule{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
 % 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
 % 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
-% 		
-% 		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \\
-% 		& & & & \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
-% 		\\ & & & & c(CW)}}
-% 		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
-% 		\cpfunc{p}{h(F) p(P)}~c(C)}}
-% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
-% 		
-% 		\cprule{s_2}{s(\_)}{+}{s_2}{}
-% 		
-% 		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
-% 		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
-% 		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+%		
+%		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
+%		 \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
+%		\newline  c(CW)}}
+%		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
+%		\cpfunc{p}{h(F) p(P)}~c(C)}}
+%		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		
+%		\cprule{s_2}{s(\_)}{+}{s_2}{}
+%		
+%		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
+%		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
+%		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
 % 
 % 	\end{cpruleset}
 % 	\caption{\label{rules:TSP2} The five rules from \cite{Cooper2019},
@@ -321,13 +319,13 @@
 % 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
 % 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
 % 		
-% 		\cprule{s_2}{\cpfunc{s}{r(R)~u() \\ & \cpfunc{p}{h(F)p(P)} \\ & c(C)}}
+% 		\cprule{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
 % 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
 % 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
 %		
-%		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \\
-%		& & & & \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
-%		\\ & & & & c(CW)}}
+%		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
+%		 \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
+%		\newline  c(CW)}}
 %		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
 %		\cpfunc{p}{h(F) p(P)}~c(C)}}
 %		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
@@ -354,22 +352,22 @@
 % 
 % \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce the unlabelled non-floating cpruleset,tabsize=2]
 % \begin{cpruleset}
-% 	\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
-% 	\cpfunc{p}{h(R)p()}}~c(\lambda)}
-% 	
-% 	\cprule{s_2}{\cpfunc{s}{r(R)~u() \\ & \cpfunc{p}{h(F)p(P)} \\ & c(C)}}
-% 	{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
-% 	\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%	\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
+%	\cpfunc{p}{h(R)p()}}~c(\lambda)}
 %	
-%	\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \\
-%	& & & & \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
-%	\\ & & & & c(CW)}}
+%	\cprule{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
+%	{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
+%	\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%
+%	\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
+%	 \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
+%	\newline c(CW)}}
 %	\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
 %	\cpfunc{p}{h(F) p(P)}~c(C)}}
 %	\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
-%		
+%	
 %	\cprule{s_2}{s(\_)}{+}{s_2}{}
-%		
+%	
 %	\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
 %	\cppromoter{\cpfunc{z}{p(P~c(1D)}}
 %	\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
@@ -381,13 +379,13 @@
 %	\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
 %	\cpfunc{p}{h(R)p()}}~c(\lambda)}
 %	
-%	\cprule{s_2}{\cpfunc{s}{r(R)~u() \\ & \cpfunc{p}{h(F)p(P)} \\ & c(C)}}
+%	\cprule{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
 %	{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
 %	\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
 %
-%	\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \\
-%	& & & & \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
-%	\\ & & & & c(CW)}}
+%	\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
+%	 \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
+%	\newline c(CW)}}
 %	\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
 %	\cpfunc{p}{h(F) p(P)}~c(C)}}
 %	\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
@@ -403,6 +401,7 @@
 % This has been carefully constructed to reveal another problem with this approach.  Without the floating environment, the ruleset is printed essentially exactly where it was declared, with the box of the |cpruleset| mostly printing on one page, but breaking and starting again on the next, but the text contained inside the environment is shifted down, overflowing the normal bottom margin for the main text.  I.e. the two become out-of-sync.  In this instance, whitespace was played around with to ensure this would happen (which is why an earlier page was left blank intentionally), but it happened by chance in an earlier draft of this documentation.
 % 
 % \subsubsection{Sending and receiving}
+% Examples are yet to be included.
 % 
 % \subsubsection{Listings of objects}
 % Listing the objects contained within a top-level cP~systems cell is a fairly common activity, especially when writing out examples of the operation of usage for a given system.  Thus, this package includes some assistance for writing those out, also.  The style is derived from that used in other recent papers.
@@ -457,7 +456,34 @@
 % 	\caption{\label{obj:fig7} The first example of an objects group}
 % \end{cpobjectsfloat}
 % 
-% It is unclear why the first line in the \autoref{obj:fig7} appears to have a wider space between it and the next line as compared to the following lines -- this has not been observed elsewhere and I can't spot any notable difference between the code for it or any other |cpobjects| environment.  This can be overcome by including a blank |\cpobjectsline{}| at the top of the |cpobjects| environment, but that then leaves a larger gap between the top of the box and the start of the objects.
+% It is unclear why the first line in the \autoref{obj:fig7} appears to have a wider space between it and the next line as compared to the following lines -- this has not been observed elsewhere and I can't spot any notable difference between the code for it or any other |cpobjects| environment.  This can be overcome by including a blank |\cpobjectsline{}| at the top of the |cpobjects| environment, but that then leaves a larger gap between the top of the box and the start of the objects.  An explanation and correction of this would be very welcome.
+%
+%
+% \subsubsection{cP terms}
+% This example demonstrates the use of the |cpterm| command for stating definitions of the different cP systems terms used in a paper.
+% 
+% It is strongly recommended that you use a |description| environment in which each of the |cpterm| commands are encapsulated.  Further, heading up the collection with a |paragraph| command for providing a heading seems to be a good idea.  Such an example is shown below, `explaining' some of the symbols that appear in \autoref{rules:TSP2}:
+% 
+% \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce a brief example of the use of cP terms,tabsize=2]
+% \paragraph{cP systems terms used}
+% \begin{description}
+% 		\cpterm{v}{A functor containing very vacuous varieties of vegetables}
+% 		\cpterm{s}{A functor containing simply sublime serpentine sausages}
+% 		\cpterm{f}{A fiendish \& frightening flash of the fraught folly of including your own full stop.}
+% 		\cpterm{a}{a is for \texttt{atom}.  To quote Radioactive Man:  Up and atom!}
+% 		\cpterm{s_1}{The starting state, wherein one states the obvious, subtly}
+% \end{description}
+% \end{Verbatim}
+% 
+% \paragraph{cP systems terms used}
+% \begin{description}
+% 		\cpterm{v}{A functor containing very vacuous varieties of vegetables}
+% 		\cpterm{s}{A functor containing simply sublime serpentine sausages}
+% 		\cpterm{f}{A fiendish \& frightening flash of the fraught folly of including your own full stop.}
+% 		\cpterm{a}{a is for \texttt{atom}.  To quote Radioactive Man:  Up and atom!}
+% 		\cpterm{s_1}{The starting state, wherein one states the obvious, subtly}
+% \end{description}
+% 
 % 
 % \StopEventually{\PrintIndex}
 %
@@ -483,6 +509,7 @@
 \RequirePackage{amsmath}
 \RequirePackage{trimspaces}
 \RequirePackage{newfloat}
+\RequirePackage{perfectcut}
 
 \newcounter{cpsystems@RuleNum}
 %    \end{macrocode}
@@ -574,7 +601,7 @@
 % First argument is the object(s) to be sent, and the second argument is the name of the channel the object(s) shall be sent on.
 %    \begin{macrocode}
 \newcommand*{\cpsend}[2]{
-	\trim@spaces@noexp{\{#1\}!_{#2}}
+	\trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}!_{#2}}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -585,7 +612,7 @@
 % First argument is the object(s) to be received, and the second argument is the name of the channel the object(s) shall be received on.
 %    \begin{macrocode}
 \newcommand*{\cprecv}[2]{
-	\trim@spaces@noexp{\{#1\}?_{#2}}
+	\trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}?_{#2}}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -629,13 +656,13 @@
 % The first argument is the symbol for the functor itself, and the second argument is the objects contained inside the functor.
 %    \begin{macrocode}
 \newcommand*{\cpfunc}[2]{
-	\trim@spaces@noexp{#1\big(#2\big)}
+	\trim@spaces@noexp{#1\perfectunary{IncreaseHeight}{(}{)}{#2}}
 }
 %    \end{macrocode}
 % \end{macro}
 % 
 % \begin{macro}{\cpterm}
-% Explanation to be completed.
+% Used when writing a listing describing the cP systems terms used in a given text (which is envisaged to be something that occurs immediately after stating the ruleset).  The general suggestion is to use these inside a |description| environment, which tends to leave the whole thing quite nicely set out.  The end result is the symbols in math mode, and then their descriptions next to them.
 %    \begin{macrocode}
 \newcommand*{\cpterm}[2]{
 	\item[$#1$]#2.
@@ -673,8 +700,7 @@
 % Required arguments are, in order, beginning state name; LHS of rule; the label to be applied to the arrow; the ending state name; the RHS of the rule.
 %    \begin{macrocode}
 \newcommand{\cpsystems@basecprule}[6]{
-    \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5 
-    	& #6\\}
+    \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5 	& #6\\}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -693,15 +719,15 @@
 % A handful of possible improvements have been thought of already, though in most cases it is entirely unclear how to achieve them at this point.  They include:
 % \begin{itemize}
 % \item A command to create line breaks in |cpruleset| environments, without requiring the user to fill in all the \&s required by the contained |array| environment to make it work.
+% \item Restoring support for line breaks inside |cpfunc| commands -- it seems to be unavoidable at times, but doesn't play nicely with the resizing brackets.
 % \item Change to a different, more modern way of declaring |cpruleset| environments that doesn't rely on the |array| environment.  There's nothing wrong with |array|, but it's probably more low-level that I actually need, and doesn't come with some conveniences (I imagine).
 % \item A way to use cross-references to refer to rule numbers in the rulesets.
-% \item Make brackets automatically grow or shrink, depending on how highly-nested they are.
 % \item Commands to write an individual rule inline in text, or in a separate paragraph.  Either way, outside of a |cpruleset| environment.
 % \item The ability to specify an optional parameter to the |cpruleset| stating the desired amount of array stretch to use.  Currently it is hard-coded as \texttt{-1.0em}.
 % \item Provide the ability to specify a printed name for |cprulesetfloat| and |cpobjectsfloat| besides `Ruleset' and `Objects Group'.
 % \item Make the package available via CTAN.
 % \item Eliminate the extraneous symbols in the index (it is unclear why they are appearing, when they have been specifically excluded using the normal method for \texttt{.dtx} files).
-% \item Change the implementation of the package to using LaTeX3's approach.
+% \item Change the implementation of the package to using \LaTeX{}3's approach.
 % \item Versions of |cpruleset| and |cpobjects| that \emph{don't} draw boxes around themselves.  Perhaps, e.g. |cpruleset*|.
 % \item A way to break up one ruleset or objects group into multiple boxes and/or across multiple pages, cleanly.  Though, to be honest, if this is becoming an issue for a ruleset, it probably means that the ruleset has grown large enough that it could be logically split into subsets.  Objects groups may be a different story.
 % \item Seek to integrate this package into David Orellana Martín's `membranecomputing' package (\url{https://ctan.org/pkg/membranecomputing}).
