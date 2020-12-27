@@ -20,7 +20,7 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[2011/06/27]
 \ProvidesPackage{cpsystems}
-[2020/12/27 v0.14 Package to aid in typesetting cP systems
+[2020/12/27 v0.15 Package to aid in typesetting cP systems
 rulesets, following Nicolescu's standard style]
 
 \RequirePackage{array}
@@ -29,6 +29,7 @@ rulesets, following Nicolescu's standard style]
 \RequirePackage{amsmath}
 \RequirePackage{trimspaces}
 \RequirePackage{newfloat}
+\RequirePackage{perfectcut}
 
 \newcounter{cpsystems@RuleNum}
 \DeclareFloatingEnvironment[name=Ruleset,within=none]{cprulesetfloat}
@@ -52,10 +53,10 @@ rulesets, following Nicolescu's standard style]
 \cpsystems@cpprominhi{\neg}{#1}
 }
 \newcommand*{\cpsend}[2]{
-\trim@spaces@noexp{\{#1\}!_{#2}}
+\trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}!_{#2}}
 }
 \newcommand*{\cprecv}[2]{
-\trim@spaces@noexp{\{#1\}?_{#2}}
+\trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}?_{#2}}
 }
 \newcommand*{\changerulenumber}[1]{
 \setcounter{cpsystems@RuleNum}{#1}
@@ -67,7 +68,7 @@ rulesets, following Nicolescu's standard style]
 \[#1\]
 }
 \newcommand*{\cpfunc}[2]{
-\trim@spaces@noexp{#1\big(#2\big)}
+\trim@spaces@noexp{#1\perfectunary{IncreaseHeight}{(}{)}{#2}}
 }
 \newcommand*{\cpterm}[2]{
 \item[$#1$]#2.
@@ -76,8 +77,7 @@ rulesets, following Nicolescu's standard style]
 \newcommand*{\cps}{cP~systems}
 \newcommand*{\cpempty}{\lambda}
 \newcommand{\cpsystems@basecprule}[6]{
-    \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5
-     & #6\\}
+    \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5  & #6\\}
 }
 \newcommand{\cpsystems@cpprominhi}[2]{
     \trim@spaces@noexp{& & & & ~ \hspace{0.5cm} ~ #1 ~ #2 & \\}

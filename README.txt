@@ -19,7 +19,7 @@
 %% version 2005/12/01 or later.
 %% 
 %%cpsystems LaTeX package
-%%Copyright (C) 2019 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
+%%Copyright (C) 2020 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
 %%
 %%The goal of this work is to provide a self-contained, easy-to-use LaTeX package that eases the typesetting of cP systems, a variant of Membrane Computing/P systems created by Dr. Radu Nicolescu and collaborators in the early 2010s.  Please refer to the package documentation for instructions on its use.  To the best of my knowledge, it is compatible with all LaTeX2e distributions which are reasonably up-to-date, as well as all classes (and likely all or almost all packages) that are typically used for publishing material on P systems.
 %%
