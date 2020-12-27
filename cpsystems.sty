@@ -20,7 +20,7 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[2011/06/27]
 \ProvidesPackage{cpsystems}
-[2020/12/27 v0.15 Package to aid in typesetting cP systems
+[2020/12/28 v0.16 Package to aid in typesetting cP systems
 rulesets, following Nicolescu's standard style]
 
 \RequirePackage{array}
@@ -42,6 +42,9 @@ rulesets, following Nicolescu's standard style]
 \newcommand{\cprule}[5]{
     \refstepcounter{cpsystems@RuleNum}
     \cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{(\arabic{cpsystems@RuleNum})}
+}
+\newcommand{\cpruleinline}[1]{
+\[\begin{array}{lllllr}#1\end{array}\]
 }
 \newcommand*{\cprulenonum}[5]{
 \cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{}
@@ -69,6 +72,9 @@ rulesets, following Nicolescu's standard style]
 }
 \newcommand*{\cpfunc}[2]{
 \trim@spaces@noexp{#1\perfectunary{IncreaseHeight}{(}{)}{#2}}
+}
+\newcommand*{\cpfuncms}[2]{
+\trim@spaces@noexp{#1\perfectunary{IncreaseHeight}{\{}{\}}{#2}}
 }
 \newcommand*{\cpterm}[2]{
 \item[$#1$]#2.

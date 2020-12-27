@@ -43,13 +43,13 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[2011/06/27]
 %<package>\ProvidesPackage{cpsystems}
 %<*package>
-[2020/12/27 v0.15 Package to aid in typesetting cP systems 
+[2020/12/28 v0.16 Package to aid in typesetting cP systems 
 	rulesets, following Nicolescu's standard style]
 %</package>
 %
 %<*driver>
 \documentclass{ltxdoc}
-\usepackage{cpsystems}[2020/12/27 v0.15]
+\usepackage{cpsystems}[2020/12/28 v0.16]
 \usepackage{fancyvrb}
 \usepackage[hidelinks]{hyperref}
 \EnableCrossrefs
@@ -64,6 +64,7 @@
 %</driver>
 % \fi
 %
+% \changes{0.16}{2020/12/28}{Added in the \texttt{cpruleinline} and \texttt{cpfuncms} macros, since I had already created them and am using them in a paper I am writing.}
 % \changes{0.15}{2020/12/27}{Introduced use of perfectcut to provide automatically-resizing brackets.  Also added an explanation and example for \texttt{cpterm}.  Unfortunately, this also breaks linebreaks inside \texttt{cpfunc} macros for the time being...}
 % \changes{0.14}{2020/12/27}{Add minimum LaTeX2e version to package specification.  Change many of the \texttt{newcommand} declarations to use the \texttt{newcommand*} style, making them ``short commands'', which (apparently) throw warnings if there is a paragraph break detected in their use -- the ones modified aren't expected to have paragraph breaks in them.  Also, added in the \texttt{cps}, \texttt{cpundig} and \texttt{cpempty} convenience macros.}  
 % \changes{0.13.1}{2020/01/12}{Fix problem with arrows appearing in the \texttt{cppromoter} and \texttt{cpinhibitor} results.}
@@ -73,7 +74,7 @@
 %
 % \DoNotIndex{\[, \{, \], \}, \\}
 %
-% \DoNotIndex{\arabic, \arraystretch, \begin, \big, \DeclareFloatingEnvironment,\end,\hspace,\item,\NeedsTeXFormat,\neg,\newcommand,\newcounter,
+% \DoNotIndex{\arabic, \arraystretch, \begin, \big, \DeclareFloatingEnvironment,\end,\hspace,\item,\NeedsTeXFormat,\neg,\newcommand,\newcounter,\setcounter,
 %	\newenvironment,\ProvidesPackage,\refstepcounter,\renewcommand,\RequirePackage,\rightarrow,\trim@spaces@noexp,\mathit,\lambda,\perfectunary}
 %
 % \providecommand*{\url}{\texttt}
@@ -139,6 +140,14 @@
 % Goes inside a |cpruleset| environment.  This is used to write out individual rules, and takes five mandatory arguments.  They are, in order, the starting state for the rule; the set of objects that are matched on and consumed by the rule; the parallelism mode specifier (currently \(+\) and \(1\) are standard for maximum and minimum parallelism); the ending state for the rule;  the objects that are output at the end of the rule.
 % 
 % E.g. a rule to move a single \(a\) out of a \(b\) functor might be written like:\\ \Verb+\cprule{s_1}{b(aa)}{1}{s_1}{b(a)~a}+ 
+%
+% \noindent
+% \DescribeMacro{\cpruleinline}
+% |\cprule| \marg{Contained |cprulenonum|}
+% 
+% Substitute for the |cpruleset| environment when the full environment is unwanted, and instead one simply wishes to include a single rule in the normal text.  This macro takes a single input, a |cprulenonum| macro, which specifies the actual rule to be typeset.  Despite its name, this macro still sets the rule out in its own mini-paragraph because it uses the standalone mathematics delimiters internally.
+% 
+% E.g. a rule to move a single \(a\) out of a \(b\) functor might be written inline in the text like:\\ \Verb+\cpruleinline{\cprulenonum{s_1}{b(aa)}{1}{s_1}{b(a)~a}}+ 
 % 
 % \noindent
 % \DescribeMacro{\cprulenonum}
@@ -203,8 +212,14 @@
 % Line breaking is currently, er, broken in this implementation.  It didn't play well with the auto-growing brackets.  |\\| is completely unusable inside a |cpfunc|.  |\linebreak| and |\newline| can be included, but seem to do absolutely nothing.  If you have any |&|s for marking out columns, they seem to cause compilation errors and should be removed.  It is unclear at the moment how to restore this functionality, but this issue is why the examples below all spill well past the right-hand-side of their frames.
 %
 % \noindent
+% \DescribeMacro{\cpfuncms}
+% |\cpfuncms| \marg{Outer functor} \marg{Contents of functor}
+% 
+% Exactly the same as a regular |cpfunc| except this one is for functors subject to micro-surgeries, and so uses curly braces instead of parentheses.  It uses curly braces because currently that is the correct style for typesetting micro-surgeries.  That is potentially subject to change in the future, so you should probably opt to use this macro instead of doing it by hand, to save yourself some hassle if/when the style does change.  Moreover, using this macro means that you get auto-growing brackets with micro-surgery functors as well as regular ones.
+%
+% \noindent
 % \DescribeMacro{\cpterm}
-% This command is used explain the meaning of a given cP systems term/symbol.  E.g. if you have a functor such as \(a(b)\), you might use |\cpterm| entries to explain the meanings of both the \(a\) functor and \(b\) atom.  Note that the current implementation of this command automatically includes a full stop/period at the end of the description -- so if you include one inside the description, you will get a double dot.  It is generally recommended to encapsulate these definitions inside a |description| environment, which ends up with everything set out pretty well.  Further, separating out the atoms from the functors from the states is also recommended.  So far, using a |paragraph| command to give the relevant title to each one, followed by a |description| with the |cpterm|s inside that seems to work out pretty well.
+% This command is used to explain the meaning of a given cP systems term/symbol.  E.g. if you have a functor such as \(a(b)\), you might use |\cpterm| entries to explain the meanings of both the \(a\) functor and \(b\) atom.  Note that the current implementation of this command automatically includes a full stop/period at the end of the description -- so if you include one inside the description, you will get a double dot.  It is generally recommended to encapsulate these definitions inside a |description| environment, which ends up with everything set out pretty well.  Further, separating out the atoms from the functors from the states is also recommended.  So far, using a |paragraph| command to give the relevant title to each one, followed by a |description| with the |cpterm|s inside that seems to work out pretty well.
 %
 % \noindent
 % \DescribeMacro{\cpundig}
@@ -214,7 +229,7 @@
 % \noindent
 % \DescribeMacro{\cps}
 % |\cps|
-% A parameter-less convenience macro for inserting the correctly-formatted way to write out cP~systems.  Used both because it is slightly shorter, and because it ensures consistency.
+% A parameter-less convenience macro for inserting the correctly-formatted way to write out ``cP~systems'' (i.e. ``|cP~systems|'').  Used both because it is slightly shorter, and because it ensures consistency.
 %
 % \noindent
 % \DescribeMacro{\cpempty}
@@ -351,6 +366,7 @@
 % If, for some reason, you \emph{don't} want your ruleset floating, or to have a caption or label, you dont actually need to use the |cprulesetfloat| environment.  |cpruleset| is all you need for laying out rules.  Just, the results probably won't be as good:
 % 
 % \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce the unlabelled non-floating cpruleset,tabsize=2]
+% \resetrulenumber
 % \begin{cpruleset}
 %	\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
 %	\cpfunc{p}{h(R)p()}}~c(\lambda)}
@@ -375,6 +391,7 @@
 % \end{cpruleset}
 % \end{Verbatim}
 % 
+% \resetrulenumber
 %\begin{cpruleset}
 %	\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
 %	\cpfunc{p}{h(R)p()}}~c(\lambda)}
@@ -398,7 +415,21 @@
 %
 % \end{cpruleset}
 %
-% This has been carefully constructed to reveal another problem with this approach.  Without the floating environment, the ruleset is printed essentially exactly where it was declared, with the box of the |cpruleset| mostly printing on one page, but breaking and starting again on the next, but the text contained inside the environment is shifted down, overflowing the normal bottom margin for the main text.  I.e. the two become out-of-sync.  In this instance, whitespace was played around with to ensure this would happen (which is why an earlier page was left blank intentionally), but it happened by chance in an earlier draft of this documentation.
+% This has been carefully constructed to reveal another problem with this approach.  Without the floating environment, the ruleset is printed essentially exactly where it was declared, with the box of the |cpruleset| mostly printing on one page, but breaking and starting again on the next, but the text contained inside the environment is shifted down, overflowing the normal bottom margin for the main text.  I.e. the two become out-of-sync.  In this instance, whitespace was played around with to ensure this would happen (which is why an earlier page was left blank intentionally), but it happened by chance in an earlier draft of this documentation.  Also, in case you didn't notice, the |resetrulenumber| macro was used at the start of this to, well, reset the rule numbers.  Did it work?
+% 
+% \subsubsection{An inline cprule}
+% The |cpruleinline| macro is included to typeset a rule inside the main text without needing to create a full cpruleset environment.  The macro takes one parameter, a |cprulenonum| macro (you could probably use a regular |cprule| macro, but I'm not sure what will happen, except that the rule will probably get a number you could do without).  E.g.
+% 
+% % \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce an inline rule,tabsize=2]
+% This is some text before the inline 
+% rule \cpruleinline{\cprulenonum{s_i}{LHS}{+/1}{RHS}{s_j}} and 
+% this is some text after it.
+% \end{Verbatim}
+%
+% This is some text before the inline 
+% rule \cpruleinline{\cprulenonum{s_i}{LHS}{+/1}{RHS}{s_j}} and 
+% this is some text after it.
+%
 % 
 % \subsubsection{Sending and receiving}
 % Examples are yet to be included.
@@ -556,7 +587,7 @@
 % 
 % \subsubsection{Rules}
 % 
-% % \begin{macro}{\cprule}
+% \begin{macro}{\cprule}
 % For writing out a rule inside a |cpruleset| environment, as well as displaying and incrementing the rule number.
 % Required arguments are, in order, beginning state name; LHS of rule; the label to be applied to the arrow; the ending state name; the RHS of the rule.
 %    \begin{macrocode}
@@ -567,6 +598,15 @@
 %    \end{macrocode}
 % \end{macro}
 % 
+% \begin{macro}{\cpruleinline}
+% For writing out a single rule inside the text, without creating a cpruleset environment.  It still places the rule in its own little paragraph, because it uses the standalone maths environment internally.  Takes a single parameter, a |cprulenonum|.
+%    \begin{macrocode}
+\newcommand{\cpruleinline}[1]{
+	\[\begin{array}{lllllr}#1\end{array}\]
+}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\cprulenonum}
 % 	Same as with a regular |\cprule|, but does not show or increment the rule counter.
 %    \begin{macrocode}
@@ -660,6 +700,17 @@
 }
 %    \end{macrocode}
 % \end{macro}
+%
+% \begin{macro}{\cpfuncms}
+% Command for declaring a cP~systems functor \emph{which uses micro-surgeries}.
+% The first argument is the symbol for the functor itself, and the second argument is the objects contained inside the functor.
+% Currently the only difference between this and the |cpfunc| command is the nature of the brackets used -- regular |cpfunc|s use parentheses, while micro-surgery functors use curly braces.  Both (but especially the latter) are potentially subject to change in the future.  Thus, one of the reasons why it is recommended to use these commands is that it will be much easier to change all your micro-surgery functors in future if the style changes.  Another reason is that these play nicely with the regular |cpfunc|s to give you automatically growing brackets.
+%    \begin{macrocode}
+\newcommand*{\cpfuncms}[2]{
+	\trim@spaces@noexp{#1\perfectunary{IncreaseHeight}{\{}{\}}{#2}}
+}
+%    \end{macrocode}
+% \end{macro}
 % 
 % \begin{macro}{\cpterm}
 % Used when writing a listing describing the cP systems terms used in a given text (which is envisaged to be something that occurs immediately after stating the ruleset).  The general suggestion is to use these inside a |description| environment, which tends to leave the whole thing quite nicely set out.  The end result is the symbols in math mode, and then their descriptions next to them.
@@ -732,6 +783,7 @@
 % \item A way to break up one ruleset or objects group into multiple boxes and/or across multiple pages, cleanly.  Though, to be honest, if this is becoming an issue for a ruleset, it probably means that the ruleset has grown large enough that it could be logically split into subsets.  Objects groups may be a different story.
 % \item Seek to integrate this package into David Orellana Martín's `membranecomputing' package (\url{https://ctan.org/pkg/membranecomputing}).
 % \item Modify the objectsgroup environment to show somehow the state that the system or containing top-level cell is in at the moment of the object snapshot.
+% \item Use the indexing function properly, so that it appears in the table of contents, and also includes all the various types of numbers pointing to different things that it talks about in its preamble.
 % \end{itemize}
 % 
 % Note that there is absolutely no time-frame currently for the completion of any of these, and at least two of them are probably in conflict with each other.
