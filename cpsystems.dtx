@@ -40,16 +40,16 @@
 %<*driver>
 \ProvidesFile{cpsystems.dtx}
 %</driver>
-%<package>\NeedsTeXFormat{LaTeX2e}
+%<package>\NeedsTeXFormat{LaTeX2e}[2011/06/27]
 %<package>\ProvidesPackage{cpsystems}
 %<*package>
-[2020/01/12 v0.13.1 Package to aid in typesetting cP systems 
+[2020/12/27 v0.14 Package to aid in typesetting cP systems 
 	rulesets, following Nicolescu's standard style]
 %</package>
 %
 %<*driver>
 \documentclass{ltxdoc}
-\usepackage{cpsystems}[2020/01/12 v0.13.1]
+\usepackage{cpsystems}[2020/12/27 v0.14]
 \usepackage{fancyvrb}
 \usepackage[hidelinks]{hyperref}
 \EnableCrossrefs
@@ -64,6 +64,7 @@
 %</driver>
 % \fi
 %
+% \changes{0.14}{2020/12/27}{Add minimum LaTeX2e version to package specification.  Change many of the \texttt{newcommand} declarations to use the \texttt{newcommand*} style, making them ``short commands'', which (apparently) throw warnings if there is a paragraph break detected in their use -- the ones modified aren't expected to have paragraph breaks in them.  Also, added in the \texttt{cps}, \texttt{cpundig} and \texttt{cpempty} convenience macros.}  
 % \changes{0.13.1}{2020/01/12}{Fix problem with arrows appearing in the \texttt{cppromoter} and \texttt{cpinhibitor} results.}
 % \changes{0.13}{2020/01/04}{Added in the commands for \texttt{cprulenonum}, \texttt{changerulenum} and \texttt{resetrulenum}.  Modified the four major pre-existing rule typesetting macros all to use an internal macro, reducing duplication of code.  Also corrected a handful of typos in the document.}
 % \changes{0.12}{2019/12/31}{Completed documentation for first DTX format attempt}
@@ -72,7 +73,7 @@
 % \DoNotIndex{\[, \{, \], \}, \\}
 %
 % \DoNotIndex{\arabic, \arraystretch, \begin, \big, \DeclareFloatingEnvironment,\end,\hspace,\item,\NeedsTeXFormat,\neg,\newcommand,\newcounter,
-%	\newenvironment,\ProvidesPackage,\refstepcounter,\renewcommand,\RequirePackage,\rightarrow,\trim@spaces@noexp}
+%	\newenvironment,\ProvidesPackage,\refstepcounter,\renewcommand,\RequirePackage,\rightarrow,\trim@spaces@noexp,\mathit,\lambda}
 %
 % \providecommand*{\url}{\texttt}
 % \GetFileInfo{cpsystems.dtx}
@@ -85,7 +86,7 @@
 % \VerbatimFootnotes
 %
 % \begin{abstract}
-%	A package to assist authors writing about cP~systems with typesetting their papers.  It comprises a handful of environments and macros that are intended to ease writing about cP~systems, and just as importantly, reduce the frequency of errors in the presentation.  It is recommended to all authors using \LaTeX{} to write about cP~systems.  Even if you don't want to use it, looking at the implementation details may give you some ideas for your own style.
+%	A package to assist authors writing about \cps{} with typesetting their papers.  It comprises a handful of environments and macros that are intended to ease writing about cP~systems, and just as importantly, reduce the frequency of errors in the presentation.  It is recommended to all authors using \LaTeX{} to write about cP~systems.  Even if you don't want to use it, looking at the implementation details may give you some ideas for your own style.
 % \end{abstract}
 % 
 % \tableofcontents
@@ -95,7 +96,7 @@
 % \section{Introduction}
 % This is a package to assist authors in writing papers on cP~systems, a particular variant of P~systems that was created by Dr. Radu Nicolescu, along with a number of collaborators, in the early 2010s.  This document assumes you have a working knowledge of cP~systems and how they should look when fully typeset.  It makes no attempt to explain the theory of cP~systems, nor why they are set out in the fashion that they.  If you would like further information on cP~systems, please see \cite{Nicolescu2018}, or \cite{Paun2002} for an excellent (albeit somewhat old) introduction to P~systems generally.
 % 
-% This package was originally created by James Cooper to help with typesetting a specific paper on cP~systems (specifically one about modelling Belief Propagation in cP~systems).  The same commands had historically been copied from paper to paper, and across sections within papers, as most of them weren't even formed into proper \LaTeX{} macros.  This was, of course, extremely error prone, with formatting errors (and worse) sometimes making it into published articles.  The commands in this package in many cases are not necessarily less verbose than simply typing out the commands inside the macros.  They are more `robust'\footnote{Note that \LaTeX{} has its own, different, concept of ``robust''.}, however, in that by using the defined macros the exact same commands are applied each time so there is greater consistency throughout the paper.\footnote{It is also hoped, perhaps vainly, that this package could eventually become \emph{the} standard way to set out cP~systems, assuring consistency across different papers by different authors.}  If the macro is mistyped, the \LaTeX{} engine itself will report the error.  They also hopefully should add greater structure to a paper and prove useful in editing the paper.
+% This package was originally created by James Cooper to help with typesetting a specific paper on cP~systems (specifically one about modelling Belief Propagation in cP~systems).  The same commands had historically been copied from paper to paper, and across sections within papers, as most of them weren't even formed into proper \LaTeX{} macros.  This was, of course, extremely error prone, with formatting errors (and worse) sometimes making it into published articles.  The commands in this package in many cases are no less verbose than simply typing out the commands inside the macros.  They are more `robust'\footnote{Note that \LaTeX{} has its own, different, concept of ``robust''.}, however, in that by using the defined macros the exact same commands are applied each time so there is greater consistency throughout the paper.\footnote{It is also hoped, perhaps vainly, that this package could eventually become \emph{the} standard way to set out cP~systems, assuring consistency across different papers by different authors.}  If the macro is mistyped, the \LaTeX{} engine itself will report the error.  They also hopefully should add greater structure to a paper and prove useful in editing the paper.
 % 
 % Note that, at present, this package is \emph{not} available on CTAN, and instead may only be retrieved from the author's academic GitHub account (see the URL listed in this document's title).  Once it has been sufficiently developed and stabilised, and/or there is consistent demand for such a package beyond the author's immediate research group, it likely will be added to CTAN, but there is no timeframe nor guarantee in place for that. 
 %
@@ -206,6 +207,21 @@
 % \noindent
 % \DescribeMacro{\cpterm}
 % A full description and examples for this item are to come.
+%
+% \noindent
+% \DescribeMacro{\cpundig}
+% |\cpundig|
+% A parameter-less convenience macro for inserting the correctly-formatted \cps{} `unitary digit' in rules.
+%
+% \noindent
+% \DescribeMacro{\cps}
+% |\cps|
+% A parameter-less convenience macro for inserting the correctly-formatted way to write out cP~systems.  Used both because it is slightly shorter, and because it ensures consistency.
+%
+% \noindent
+% \DescribeMacro{\cpempty}
+% |\cpempty|
+% A parameter-less convenience macro for inserting the correctly-formatted empty functor symbol (which is actually just a |\lambda|).  Mostly used so that intent is clear in the rules specifications, but also partly in case someone ends up changing how empty functors are specified.
 % 
 % 
 % \subsection{\label{sect:fulleg}Full examples}
@@ -441,12 +457,12 @@
 % 	\caption{\label{obj:fig7} The first example of an objects group}
 % \end{cpobjectsfloat}
 % 
-% It is unclear why the first line in the \autoref{obj:fig7} appears to have a wider space between it and the next line as compared to the following lines -- this has not been observed elsewhere.  This can be overcome by including a blank |\cpobjectsline{}| at the top of the |cpobjects| environment, but that then leaves a larger gap between the top of the box and the start of the objects.
+% It is unclear why the first line in the \autoref{obj:fig7} appears to have a wider space between it and the next line as compared to the following lines -- this has not been observed elsewhere and I can't spot any notable difference between the code for it or any other |cpobjects| environment.  This can be overcome by including a blank |\cpobjectsline{}| at the top of the |cpobjects| environment, but that then leaves a larger gap between the top of the box and the start of the objects.
 % 
 % \StopEventually{\PrintIndex}
 %
 % \section{Implementation}
-% This section presents the actual implementation of the package.  For the most part you probaly won't need to refer to it, but every so often you might, especially to work out some error that \LaTeX{} is throwing at you, based on what the commands defined within become once they have been substituted into your document.
+% This section presents the actual implementation of the package.  For the most part you probably won't need to refer to it, but every so often you might, especially to work out some error that \LaTeX{} is throwing at you, based on what the commands defined within become once they have been substituted into your document.
 %
 % \iffalse
 %<*package>
@@ -527,7 +543,7 @@
 % \begin{macro}{\cprulenonum}
 % 	Same as with a regular |\cprule|, but does not show or increment the rule counter.
 %    \begin{macrocode}
-\newcommand{\cprulenonum}[5]{
+\newcommand*{\cprulenonum}[5]{
 	\cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{}
 }
 %    \end{macrocode}
@@ -536,7 +552,7 @@
 % \begin{macro}{\cppromoter}
 % For specifying promoters as part of a rule.
 %    \begin{macrocode}
-\newcommand{\cppromoter}[1]{
+\newcommand*{\cppromoter}[1]{
 	\cpsystems@cpprominhi{|}{#1}
 }
 %    \end{macrocode}
@@ -546,7 +562,7 @@
 % \begin{macro}{\cpinhibitor}
 % For specifying inhibitors as part of a rule.
 %    \begin{macrocode}
-\newcommand{\cpinhibitor}[1]{
+\newcommand*{\cpinhibitor}[1]{
 	\cpsystems@cpprominhi{\neg}{#1}
 }
 %    \end{macrocode}
@@ -557,7 +573,7 @@
 % Encapsulate a `send' in cP~systems.
 % First argument is the object(s) to be sent, and the second argument is the name of the channel the object(s) shall be sent on.
 %    \begin{macrocode}
-\newcommand{\cpsend}[2]{
+\newcommand*{\cpsend}[2]{
 	\trim@spaces@noexp{\{#1\}!_{#2}}
 }
 %    \end{macrocode}
@@ -568,7 +584,7 @@
 % Encapsulate a `receive' in cP~systems.
 % First argument is the object(s) to be received, and the second argument is the name of the channel the object(s) shall be received on.
 %    \begin{macrocode}
-\newcommand{\cprecv}[2]{
+\newcommand*{\cprecv}[2]{
 	\trim@spaces@noexp{\{#1\}?_{#2}}
 }
 %    \end{macrocode}
@@ -578,7 +594,7 @@
 % Change the rules counter to whatever positive integer you specify.
 % There's likely an upper limit to what numbers you can set (and you may even be able to use negative numbers (you'd have to look into the details of \LaTeX{}/\TeX{}'s counter system to be sure)), but that number has not been found as of yet, and is probably higher than the number of rules you should include in any one paper.
 %    \begin{macrocode}
-\newcommand{\changerulenumber}[1]{
+\newcommand*{\changerulenumber}[1]{
 	\setcounter{cpsystems@RuleNum}{#1}
 }
 %    \end{macrocode}
@@ -588,7 +604,7 @@
 % \begin{macro}{\resetrulenumber}
 % Reset the rules counter, i.e. make it zero again, so that the next rule in the document will receive the number 1.
 %    \begin{macrocode}
-\newcommand{\resetrulenumber}{
+\newcommand*{\resetrulenumber}{
 	\setcounter{cpsystems@RuleNum}{0}
 }
 %    \end{macrocode}
@@ -612,7 +628,7 @@
 % Command for declaring a cP~systems functor.
 % The first argument is the symbol for the functor itself, and the second argument is the objects contained inside the functor.
 %    \begin{macrocode}
-\newcommand{\cpfunc}[2]{
+\newcommand*{\cpfunc}[2]{
 	\trim@spaces@noexp{#1\big(#2\big)}
 }
 %    \end{macrocode}
@@ -621,11 +637,33 @@
 % \begin{macro}{\cpterm}
 % Explanation to be completed.
 %    \begin{macrocode}
-\newcommand{\cpterm}[2]{
+\newcommand*{\cpterm}[2]{
 	\item[$#1$]#2.
 }
 %    \end{macrocode}
 % \end{macro}
+%
+% \begin{macro}{\cpundig}
+% A parameter-less convenience macro for inserting the correctly-formatted \cps{} `unitary digit' in rules.
+%    \begin{macrocode}
+\newcommand*{\cpundig}{\mathit{1}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\cps}
+% A parameter-less convenience macro for inserting the correctly-formatted way to write out cP~systems.  Used both because it is slightly shorter, and because it ensures consistency.
+%    \begin{macrocode}
+\newcommand*{\cps}{cP~systems}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\cpempty}
+% A parameter-less convenience macro for inserting the correctly-formatted empty functor symbol (which is actually just a |\lambda|).  Mostly used so that intent is clear in the rules specifications, but also partly in case someone ends up changing how empty functors are specified.
+%    \begin{macrocode}
+\newcommand*{\cpempty}{\lambda}
+%    \end{macrocode}
+% \end{macro}
+%
 % 
 % \subsection{Internal}
 % Macros that are only intended to be used inside the package, and probably shouldn't be used outside of it.  Much as if the previous macros are all the public interface of the package, while these ones are the private implementation details.
@@ -650,10 +688,13 @@
 %    \end{macrocode}
 % \end{macro}
 %
+%
 % \section{Possible improvements}
 % A handful of possible improvements have been thought of already, though in most cases it is entirely unclear how to achieve them at this point.  They include:
 % \begin{itemize}
 % \item A command to create line breaks in |cpruleset| environments, without requiring the user to fill in all the \&s required by the contained |array| environment to make it work.
+% \item Change to a different, more modern way of declaring |cpruleset| environments that doesn't rely on the |array| environment.  There's nothing wrong with |array|, but it's probably more low-level that I actually need, and doesn't come with some conveniences (I imagine).
+% \item A way to use cross-references to refer to rule numbers in the rulesets.
 % \item Make brackets automatically grow or shrink, depending on how highly-nested they are.
 % \item Commands to write an individual rule inline in text, or in a separate paragraph.  Either way, outside of a |cpruleset| environment.
 % \item The ability to specify an optional parameter to the |cpruleset| stating the desired amount of array stretch to use.  Currently it is hard-coded as \texttt{-1.0em}.
@@ -663,9 +704,11 @@
 % \item Change the implementation of the package to using LaTeX3's approach.
 % \item Versions of |cpruleset| and |cpobjects| that \emph{don't} draw boxes around themselves.  Perhaps, e.g. |cpruleset*|.
 % \item A way to break up one ruleset or objects group into multiple boxes and/or across multiple pages, cleanly.  Though, to be honest, if this is becoming an issue for a ruleset, it probably means that the ruleset has grown large enough that it could be logically split into subsets.  Objects groups may be a different story.
+% \item Seek to integrate this package into David Orellana Martín's `membranecomputing' package (\url{https://ctan.org/pkg/membranecomputing}).
+% \item Modify the objectsgroup environment to show somehow the state that the system or containing top-level cell is in at the moment of the object snapshot.
 % \end{itemize}
 % 
-% Note that there is absolutely no time-frame currently for the completion of any of these.
+% Note that there is absolutely no time-frame currently for the completion of any of these, and at least two of them are probably in conflict with each other.
 % 
 % \bibliographystyle{acm}
 % \bibliography{cpsystems}
