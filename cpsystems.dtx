@@ -1,7 +1,7 @@
 % \iffalse meta-comment
 % !TEX program  = pdfLaTeX
 %
-% Copyright (C) 2020 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
+% Copyright (C) 2021 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
 % ---------------------------------------------------------------------------
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3
@@ -22,7 +22,7 @@
 % \iffalse
 %<*readme>
 %%cpsystems LaTeX package
-%%Copyright (C) 2020 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
+%%Copyright (C) 2021 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
 %%
 %%The goal of this work is to provide a self-contained, easy-to-use LaTeX package that eases the typesetting of cP systems, a variant of Membrane Computing/P systems created by Dr. Radu Nicolescu and collaborators in the early 2010s.  Please refer to the package documentation for instructions on its use.  To the best of my knowledge, it is compatible with all LaTeX2e distributions which are reasonably up-to-date, as well as all classes (and likely all or almost all packages) that are typically used for publishing material on P systems.
 %%
@@ -43,13 +43,13 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[2011/06/27]
 %<package>\ProvidesPackage{cpsystems}
 %<*package>
-[2020/12/28 v0.16 Package to aid in typesetting cP systems 
+[2021/03/17 v0.17 Package to aid in typesetting cP systems 
 	rulesets, following Nicolescu's standard style]
 %</package>
 %
 %<*driver>
 \documentclass{ltxdoc}
-\usepackage{cpsystems}[2020/12/28 v0.16]
+\usepackage{cpsystems}[2021/03/17 v0.11]
 \usepackage{fancyvrb}
 \usepackage[hidelinks]{hyperref}
 \EnableCrossrefs
@@ -64,6 +64,7 @@
 %</driver>
 % \fi
 %
+% \changes{0.17}{2020/12/28}{Remove the ending dot from \texttt{cpterm}.  Adjust \texttt{cpsend} and \texttt{cprecv} to use a single internal base rule.  Removed the \texttt{cps} command, to avoid potential conflicts with other packages.  I have found defining cP systems as a glossary term to be a superior alternative anyway.  Changed \texttt{cpresetrulenumber} to make use of \texttt{cpchangerulenumber}, instead of replicating the functionality.}
 % \changes{0.16}{2020/12/28}{Added in the \texttt{cpruleinline} and \texttt{cpfuncms} macros, since I had already created them and am using them in a paper I am writing.}
 % \changes{0.15}{2020/12/27}{Introduced use of perfectcut to provide automatically-resizing brackets.  Also added an explanation and example for \texttt{cpterm}.  Unfortunately, this also breaks linebreaks inside \texttt{cpfunc} macros for the time being...}
 % \changes{0.14}{2020/12/27}{Add minimum LaTeX2e version to package specification.  Change many of the \texttt{newcommand} declarations to use the \texttt{newcommand*} style, making them ``short commands'', which (apparently) throw warnings if there is a paragraph break detected in their use -- the ones modified aren't expected to have paragraph breaks in them.  Also, added in the \texttt{cps}, \texttt{cpundig} and \texttt{cpempty} convenience macros.}  
@@ -88,7 +89,7 @@
 % \VerbatimFootnotes
 %
 % \begin{abstract}
-%	A package to assist authors writing about \cps{} with typesetting their papers.  It comprises a handful of environments and macros that are intended to ease writing about cP~systems, and just as importantly, reduce the frequency of errors in the presentation.  It is recommended to all authors using \LaTeX{} to write about cP~systems.  Even if you don't want to use it, looking at the implementation details may give you some ideas for your own style.
+%	A package to assist authors writing about cP~systems with typesetting their papers.  It comprises a handful of environments and macros that are intended to ease writing about cP~systems, and just as importantly, reduce the frequency of errors in the presentation.  It is recommended to all authors using \LaTeX{} to write about cP~systems.  Even if you don't want to use it, looking at the implementation details may give you some ideas for your own style.
 % \end{abstract}
 % 
 % \tableofcontents
@@ -224,7 +225,7 @@
 % \noindent
 % \DescribeMacro{\cpundig}
 % |\cpundig|
-% A parameter-less convenience macro for inserting the correctly-formatted \cps{} `unitary digit' in rules.
+% A parameter-less convenience macro for inserting the correctly-formatted cP~systems `unitary digit' in rules.
 %
 % \noindent
 % \DescribeMacro{\cps}
@@ -641,7 +642,7 @@
 % First argument is the object(s) to be sent, and the second argument is the name of the channel the object(s) shall be sent on.
 %    \begin{macrocode}
 \newcommand*{\cpsend}[2]{
-	\trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}!_{#2}}
+    \cpsystems@basecpsendrecv{#1}{#2}{!}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -652,7 +653,7 @@
 % First argument is the object(s) to be received, and the second argument is the name of the channel the object(s) shall be received on.
 %    \begin{macrocode}
 \newcommand*{\cprecv}[2]{
-	\trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}?_{#2}}
+    \cpsystems@basecpsendrecv{#1}{#2}{?}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -672,7 +673,7 @@
 % Reset the rules counter, i.e. make it zero again, so that the next rule in the document will receive the number 1.
 %    \begin{macrocode}
 \newcommand*{\resetrulenumber}{
-	\setcounter{cpsystems@RuleNum}{0}
+    \changerulenumber{0}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -716,22 +717,15 @@
 % Used when writing a listing describing the cP systems terms used in a given text (which is envisaged to be something that occurs immediately after stating the ruleset).  The general suggestion is to use these inside a |description| environment, which tends to leave the whole thing quite nicely set out.  The end result is the symbols in math mode, and then their descriptions next to them.
 %    \begin{macrocode}
 \newcommand*{\cpterm}[2]{
-	\item[$#1$]#2.
+	\item[$#1$]#2
 }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\cpundig}
-% A parameter-less convenience macro for inserting the correctly-formatted \cps{} `unitary digit' in rules.
+% A parameter-less convenience macro for inserting the correctly-formatted cP~systems `unitary digit' in rules.
 %    \begin{macrocode}
 \newcommand*{\cpundig}{\mathit{1}}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\cps}
-% A parameter-less convenience macro for inserting the correctly-formatted way to write out cP~systems.  Used both because it is slightly shorter, and because it ensures consistency.
-%    \begin{macrocode}
-\newcommand*{\cps}{cP~systems}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -761,6 +755,15 @@
 %    \begin{macrocode}
 \newcommand{\cpsystems@cpprominhi}[2]{
     \trim@spaces@noexp{& & & & ~ \hspace{0.5cm} ~ #1 ~ #2 & \\}
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\cpsystems@basecpsendrecv}
+% Base rule which both |\cpsend| and |\cprecv| make use of.  This is a ``single source of truth'', and means only one place needs to be changed to change the brackets which encapsulate messages.
+%    \begin{macrocode}
+\newcommand{\cpsystems@basecpsendrecv}[3]{
+    \trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}{#3}_{#2}}
 }
 %    \end{macrocode}
 % \end{macro}
