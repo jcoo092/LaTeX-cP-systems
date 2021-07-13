@@ -104,7 +104,7 @@
 % 
 % Note that, at present, this package is \emph{not} available on CTAN, and instead may only be retrieved from the author's academic GitHub account (see the URL listed in this document's title).  Once it has been sufficiently developed and stabilised, and/or there is consistent demand for such a package beyond the author's immediate research group, it likely will be added to CTAN, but there is no timeframe nor guarantee in place for that.
 %
- % Also be aware that some of the commands included in the package aren't currently documented outside of section \ref{sec:implementation}.  The commands exist and are used, but I haven't had the spare time to write about them properly yet.
+% Also be aware that some of the commands included in the package aren't currently documented outside of section \ref{sec:implementation}.  The commands exist and are used, but I haven't had the spare time to write about them properly yet.
 %
 % \section{Usage}
 %
@@ -642,7 +642,7 @@
 % 	Mostly the same as a regular |\cprule|, but takes the rule number to display as an extra parameter.  This also does \emph{not} increment the rule counter.  I'm yet to work out how you could make references to these rule numbers.  This is currently basically just a quick hack to permit the display of alternatives of pre-existing rules, and right now everything must be updated manually.
 %    \begin{macrocode}
 \newcommand*{\cprulecustnum}[6]{
-	\cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{#6}
+	\cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{(#6)}
 }
 %    \end{macrocode}
 % \end{macro}

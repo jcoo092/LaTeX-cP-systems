@@ -30,7 +30,6 @@
 %%Constructive pull requests, creation of issues for bugs, and suggestions for improvements are very welcome.
 %%
 %%This package was originally created to assist me while writing a paper on cP systems which should also largely re-appear in my PhD dissertation.  While you are certainly free to peruse and use this package, if you don't know what Membrane Computing/P systems is, this package is unlikely to be of much use to you.
- % Also be aware that some of the commands included in the package aren't currently documented outside of section \ref{sec:implementation}.  The commands exist and are used, but I haven't had the spare time to write about them properly yet.
 \endinput
 %%
 %% End of file `README.txt'.

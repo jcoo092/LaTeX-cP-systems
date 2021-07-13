@@ -22,7 +22,6 @@
 \ProvidesPackage{cpsystems}
 [2021/07/14 v0.18 Package to aid in typesetting cP systems
 rulesets, following Nicolescu's standard style]
- % Also be aware that some of the commands included in the package aren't currently documented outside of section \ref{sec:implementation}.  The commands exist and are used, but I haven't had the spare time to write about them properly yet.
 
 \RequirePackage{array}
 \RequirePackage{framed}
@@ -59,7 +58,7 @@ rulesets, following Nicolescu's standard style]
 \cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{}
 }
 \newcommand*{\cprulecustnum}[6]{
-\cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{#6}
+\cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{(#6)}
 }
 \newcommand*{\cppromoter}[1]{
 \cpsystems@cpprominhi{|}{#1}
