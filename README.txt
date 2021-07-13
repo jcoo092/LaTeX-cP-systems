@@ -8,7 +8,7 @@
 %% 
 %% This is a generated file.
 %% 
-%% Copyright (C) 2020 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
+%% Copyright (C) 2021 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
 %% --------------------------------------------------------------------------
 %% This work may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either version 1.3
@@ -19,7 +19,7 @@
 %% version 2005/12/01 or later.
 %% 
 %%cpsystems LaTeX package
-%%Copyright (C) 2020 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
+%%Copyright (C) 2021 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
 %%
 %%The goal of this work is to provide a self-contained, easy-to-use LaTeX package that eases the typesetting of cP systems, a variant of Membrane Computing/P systems created by Dr. Radu Nicolescu and collaborators in the early 2010s.  Please refer to the package documentation for instructions on its use.  To the best of my knowledge, it is compatible with all LaTeX2e distributions which are reasonably up-to-date, as well as all classes (and likely all or almost all packages) that are typically used for publishing material on P systems.
 %%
@@ -30,6 +30,7 @@
 %%Constructive pull requests, creation of issues for bugs, and suggestions for improvements are very welcome.
 %%
 %%This package was originally created to assist me while writing a paper on cP systems which should also largely re-appear in my PhD dissertation.  While you are certainly free to peruse and use this package, if you don't know what Membrane Computing/P systems is, this package is unlikely to be of much use to you.
+ % Also be aware that some of the commands included in the package aren't currently documented outside of section \ref{sec:implementation}.  The commands exist and are used, but I haven't had the spare time to write about them properly yet.
 \endinput
 %%
 %% End of file `README.txt'.

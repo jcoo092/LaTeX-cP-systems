@@ -8,7 +8,7 @@
 %% 
 %% This is a generated file.
 %% 
-%% Copyright (C) 2020 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
+%% Copyright (C) 2021 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
 %% --------------------------------------------------------------------------
 %% This work may be distributed and/or modified under the
 %% conditions of the LaTeX Project Public License, either version 1.3
@@ -20,8 +20,9 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[2011/06/27]
 \ProvidesPackage{cpsystems}
-[2020/12/28 v0.16 Package to aid in typesetting cP systems
+[2021/07/14 v0.18 Package to aid in typesetting cP systems
 rulesets, following Nicolescu's standard style]
+ % Also be aware that some of the commands included in the package aren't currently documented outside of section \ref{sec:implementation}.  The commands exist and are used, but I haven't had the spare time to write about them properly yet.
 
 \RequirePackage{array}
 \RequirePackage{framed}
@@ -36,18 +37,29 @@ rulesets, following Nicolescu's standard style]
 \DeclareFloatingEnvironment[name=Objects Group,within=none]{cpobjectsfloat}
 \newenvironment{cpruleset}
 {\begin{framed}\begin{adjustwidth}{-1.0em}{-1.0em}
-\renewcommand{\arraystretch}{1.0}\[\begin{array}{lllllr}}
+\renewcommand{\arraystretch}{1.1}\[\begin{array}{lllllr}}
 {\end{array}\]\end{adjustwidth}\end{framed}}
 \newenvironment{cpobjects}{\begin{framed}}{\end{framed}}
+\newcommand*{\cptuple}[7]{
+    \[
+        \cpfunc{\Pi_{#1}}{#2, #3, #4, #5, #6, #7}
+    \]
+}
+\newcommand*{\cptupletemplate}{
+    \cptuple{cP}{T}{A}{O}{R}{S}{\Bar{s}}
+}
 \newcommand{\cprule}[5]{
     \refstepcounter{cpsystems@RuleNum}
-    \cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{(\arabic{cpsystems@RuleNum})}
+    \cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{\hspace{4.0em}(\arabic{cpsystems@RuleNum})}
 }
 \newcommand{\cpruleinline}[1]{
 \[\begin{array}{lllllr}#1\end{array}\]
 }
 \newcommand*{\cprulenonum}[5]{
 \cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{}
+}
+\newcommand*{\cprulecustnum}[6]{
+\cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{#6}
 }
 \newcommand*{\cppromoter}[1]{
 \cpsystems@cpprominhi{|}{#1}
@@ -56,20 +68,29 @@ rulesets, following Nicolescu's standard style]
 \cpsystems@cpprominhi{\neg}{#1}
 }
 \newcommand*{\cpsend}[2]{
-\trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}!_{#2}}
+    \cpsystems@basecpsendrecv{#1}{#2}{!}
 }
 \newcommand*{\cprecv}[2]{
-\trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}?_{#2}}
+    \cpsystems@basecpsendrecv{#1}{#2}{?}
 }
-\newcommand*{\changerulenumber}[1]{
+\newcommand*{\cpantisend}[2]{
+    \cpsystems@basecpsendrecv{#1}{#2}{!!}
+}
+\newcommand*{\cpantirecv}[2]{
+    \cpsystems@basecpsendrecv{#1}{#2}{??}
+}
+\newcommand*{\cpchangerulenumber}[1]{
 \setcounter{cpsystems@RuleNum}{#1}
 }
-\newcommand*{\resetrulenumber}{
-\setcounter{cpsystems@RuleNum}{0}
+\newcommand*{\cpresetrulenumber}{
+    \cpchangerulenumber{0}
 }
+\newcommand*{\cponce}{{\scriptstyle 1}}
+\newcommand*{\cpmaxpar}{{\scriptstyle +}}
 \newcommand{\cpobjectsline}[1]{
 \[#1\]
 }
+\newcommand*{\cpset}[1]{\perfectunary{IncreaseHeight}{\{}{\}}{#1}}
 \newcommand*{\cpfunc}[2]{
 \trim@spaces@noexp{#1\perfectunary{IncreaseHeight}{(}{)}{#2}}
 }
@@ -77,16 +98,18 @@ rulesets, following Nicolescu's standard style]
 \trim@spaces@noexp{#1\perfectunary{IncreaseHeight}{\{}{\}}{#2}}
 }
 \newcommand*{\cpterm}[2]{
-\item[$#1$]#2.
+\item[$#1$]#2
 }
 \newcommand*{\cpundig}{\mathit{1}}
-\newcommand*{\cps}{cP~systems}
 \newcommand*{\cpempty}{\lambda}
 \newcommand{\cpsystems@basecprule}[6]{
     \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5  & #6\\}
 }
 \newcommand{\cpsystems@cpprominhi}[2]{
-    \trim@spaces@noexp{& & & & ~ \hspace{0.5cm} ~ #1 ~ #2 & \\}
+    \trim@spaces@noexp{& & & & ~ \hspace{1em} ~ #1 ~ #2 & \\}
+}
+\newcommand{\cpsystems@basecpsendrecv}[3]{
+    \trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}{#3}_{#2}}
 }
 \endinput
 %%
