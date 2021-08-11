@@ -20,7 +20,7 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[2011/06/27]
 \ProvidesPackage{cpsystems}
-[2021/07/14 v0.18 Package to aid in typesetting cP systems
+[2021/08/11 v0.19 Package to aid in typesetting cP systems
 rulesets, following Nicolescu's standard style]
 
 \RequirePackage{array}
@@ -31,13 +31,23 @@ rulesets, following Nicolescu's standard style]
 \RequirePackage{newfloat}
 \RequirePackage{perfectcut}
 
-\newcounter{cpsystems@RuleNum}
-\DeclareFloatingEnvironment[name=Ruleset,within=none]{cprulesetfloat}
-\DeclareFloatingEnvironment[name=Objects Group,within=none]{cpobjectsfloat}
+\DeclareFloatingEnvironment[name=Ruleset,
+listname={List of cP~systems Rulesets},within=none]
+{cprulesetfloat}
+\DeclareFloatingEnvironment[name=Objects Group,
+listname={List of cP~systems Objects Groups},within=none]
+{cpobjectsfloat}
 \newenvironment{cpruleset}
 {\begin{framed}\begin{adjustwidth}{-1.0em}{-1.0em}
 \renewcommand{\arraystretch}{1.1}\[\begin{array}{lllllr}}
-{\end{array}\]\end{adjustwidth}\end{framed}}
+{\end{array}\]\end{adjustwidth}\end{framed}
+\setcounter{cpsystems@RuleNumAlt}{\value{cpsystems@RuleNum}}}
+\newenvironment{cprulesetcontnum}
+{\setcounter{cpsystems@RuleNum}{\value{cpsystems@RuleNumAlt}}
+\begin{framed}\begin{adjustwidth}{-1.0em}{-1.0em}
+\renewcommand{\arraystretch}{1.1}\[\begin{array}{lllllr}}
+{\end{array}\]\end{adjustwidth}\end{framed}
+\setcounter{cpsystems@RuleNumAlt}{\value{cpsystems@RuleNum}}}
 \newenvironment{cpobjects}{\begin{framed}}{\end{framed}}
 \newcommand*{\cptuple}[7]{
     \[
@@ -47,9 +57,10 @@ rulesets, following Nicolescu's standard style]
 \newcommand*{\cptupletemplate}{
     \cptuple{cP}{T}{A}{O}{R}{S}{\Bar{s}}
 }
-\newcommand{\cprule}[5]{
+\newcommand{\cprule}[6][1.5em]{
     \refstepcounter{cpsystems@RuleNum}
-    \cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{\hspace{4.0em}(\arabic{cpsystems@RuleNum})}
+    \cpsystems@basecprule{#2}{#3}{#4}{#5}{#6}
+{\hspace{#1}(\arabic{cpsystems@RuleNum})}
 }
 \newcommand{\cpruleinline}[1]{
 \[\begin{array}{lllllr}#1\end{array}\]
@@ -80,6 +91,7 @@ rulesets, following Nicolescu's standard style]
 }
 \newcommand*{\cpchangerulenumber}[1]{
 \setcounter{cpsystems@RuleNum}{#1}
+\setcounter{cpsystems@RuleNumAlt}{#1}
 }
 \newcommand*{\cpresetrulenumber}{
     \cpchangerulenumber{0}
@@ -89,18 +101,33 @@ rulesets, following Nicolescu's standard style]
 \newcommand{\cpobjectsline}[1]{
 \[#1\]
 }
-\newcommand*{\cpset}[1]{\perfectunary{IncreaseHeight}{\{}{\}}{#1}}
+\newcommand*{\cpset}[1]{\cpsystems@perfuncurlies{#1}}
 \newcommand*{\cpfunc}[2]{
-\trim@spaces@noexp{#1\perfectunary{IncreaseHeight}{(}{)}{#2}}
+\trim@spaces@noexp{#1\cpsystems@perfunparens{#2}}
 }
 \newcommand*{\cpfuncms}[2]{
-\trim@spaces@noexp{#1\perfectunary{IncreaseHeight}{\{}{\}}{#2}}
+\trim@spaces@noexp{#1\cpsystems@perfuncurlies{#2}}
+}
+\newcommand*{\cpfuncn}[3]{
+\cpfunc{#1}{#2}\cpsystems@perfunparens{#3}
+}
+\newcommand*{\cpfuncnms}[3]{
+\cpfunc{#1}{#2}\cpsystems@perfuncurlies{#3}
+}
+\newcommand*{\cpfuncnn}[4]{
+\cpfuncn{#1}{#2}{#3}\cpsystems@perfunparens{#4}
+}
+\newcommand*{\cpfuncnnms}[4]{
+\cpfuncn{#1}{#2}{#3}\cpsystems@perfuncurlies{#4}
 }
 \newcommand*{\cpterm}[2]{
 \item[$#1$]#2
 }
 \newcommand*{\cpundig}{\mathit{1}}
 \newcommand*{\cpempty}{\lambda}
+\newcommand*{\cpdiscard}{\_}
+\newcounter{cpsystems@RuleNum}[cprulesetfloat]
+\newcounter{cpsystems@RuleNumAlt}
 \newcommand{\cpsystems@basecprule}[6]{
     \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5  & #6\\}
 }
@@ -108,7 +135,13 @@ rulesets, following Nicolescu's standard style]
     \trim@spaces@noexp{& & & & ~ \hspace{1em} ~ #1 ~ #2 & \\}
 }
 \newcommand{\cpsystems@basecpsendrecv}[3]{
-    \trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}{#3}_{#2}}
+    \trim@spaces@noexp{\cpsystems@perfuncurlies{#1}{#3}_{#2}}
+}
+\newcommand{\cpsystems@perfunparens}[1]{
+    \trim@spaces@noexp{\perfectunary{IncreaseHeight}{(}{)}{#1}}
+}
+\newcommand{\cpsystems@perfuncurlies}[1]{
+    \trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}}
 }
 \endinput
 %%

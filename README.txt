@@ -29,7 +29,7 @@
 %%
 %%Constructive pull requests, creation of issues for bugs, and suggestions for improvements are very welcome.
 %%
-%%This package was originally created to assist me while writing a paper on cP systems which should also largely re-appear in my PhD dissertation.  While you are certainly free to peruse and use this package, if you don't know what Membrane Computing/P systems is, this package is unlikely to be of much use to you.
+%%This package was originally created to assist me while writing a paper on cP systems which also largely re-appears in my PhD dissertation.  While you are certainly free to peruse and use this package, if you don't know what Membrane Computing/P systems is, this package is unlikely to be of much use to you.
 \endinput
 %%
 %% End of file `README.txt'.

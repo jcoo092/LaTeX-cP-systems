@@ -32,7 +32,7 @@
 %%
 %%Constructive pull requests, creation of issues for bugs, and suggestions for improvements are very welcome.
 %%
-%%This package was originally created to assist me while writing a paper on cP systems which should also largely re-appear in my PhD dissertation.  While you are certainly free to peruse and use this package, if you don't know what Membrane Computing/P systems is, this package is unlikely to be of much use to you.
+%%This package was originally created to assist me while writing a paper on cP systems which also largely re-appears in my PhD dissertation.  While you are certainly free to peruse and use this package, if you don't know what Membrane Computing/P systems is, this package is unlikely to be of much use to you.
 %</readme>
 % \fi
 %
@@ -43,13 +43,13 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[2011/06/27]
 %<package>\ProvidesPackage{cpsystems}
 %<*package>
-[2021/07/14 v0.18 Package to aid in typesetting cP systems 
+[2021/08/11 v0.19 Package to aid in typesetting cP systems 
 	rulesets, following Nicolescu's standard style]
 %</package>
 %
 %<*driver>
 \documentclass{ltxdoc}
-\usepackage{cpsystems}[2021/07/14 v0.18]
+\usepackage{cpsystems}[2021/08/11 v0.19]
 \usepackage{fancyvrb}
 \usepackage[hidelinks]{hyperref}
 \EnableCrossrefs
@@ -64,6 +64,7 @@
 %</driver>
 % \fi
 %
+% \changes{0.19}{2021/08/11}{Most importantly, changed the default behaviour of rules numbers --- now, they no longer continue on from one ruleset to the next by default.  Instead, they reset at each new \texttt{cprulesetfloat}.  Added commands for the \texttt{cpfuncn} and \texttt{cpfuncnms} stuff.  Modified the \texttt{cprule} definition to permit the optional width adjustment.  Introduced the (basically untested) \texttt{cprulsetcontnum} environment, and the \texttt{cpdiscard} command.  Also added in the internal \texttt{perfunXXX} macros to tidy up the definitions of other macros.}
 % \changes{0.18}{2021/07/14}{Added in \texttt{cprulecustnum}, \texttt{cpantirecv}, \texttt{cpantisend}, \texttt{cptuple}, \texttt{cptupetemplate}, \texttt{cponce}, \texttt{cpmaxpar}, \texttt{cpset}.  Adjusted the arraystretch for rules slightly (from 1.0 to 1.1).   Prefixed \texttt{changerulenumber} and \texttt{resetrulenumber} with \texttt{cp}.  }
 % \changes{0.17}{2021/03/17}{Remove the ending dot from \texttt{cpterm}.  Adjust \texttt{cpsend} and \texttt{cprecv} to use a single internal base rule.  Removed the \texttt{cps} command, to avoid potential conflicts with other packages.  I have found defining cP systems as a glossary term to be a superior alternative anyway.  Changed \texttt{cpresetrulenumber} to make use of \texttt{cpchangerulenumber}, instead of replicating the functionality.}
 % \changes{0.16}{2020/12/28}{Added in the \texttt{cpruleinline} and \texttt{cpfuncms} macros, since I had already created them and am using them in a paper I am writing.}
@@ -74,10 +75,11 @@
 % \changes{0.12}{2019/12/31}{Completed documentation for first DTX format attempt}
 % \changes{0.11}{2019/12/27}{Converted to DTX file}
 %
-% \DoNotIndex{\[, \{, \], \}, \\}
+% \DoNotIndex{\[, \{, \], \}, \\, \_}
 %
-% \DoNotIndex{\arabic, \arraystretch, \begin, \big, \DeclareFloatingEnvironment,\end,\hspace,\item,\NeedsTeXFormat,\neg,\newcommand,\newcounter,\setcounter,
-%	\newenvironment,\ProvidesPackage,\refstepcounter,\renewcommand,\RequirePackage,\rightarrow,\trim@spaces@noexp,\mathit,\lambda,\perfectunary}
+% \DoNotIndex{\arabic, \arraystretch, \begin, \big, \DeclareFloatingEnvironment, \end, \hspace, \item, \NeedsTeXFormat, \neg, \newcommand, \newcounter, \setcounter,
+%	\newenvironment, \ProvidesPackage, \refstepcounter, \renewcommand, \RequirePackage, \rightarrow, \trim@spaces@noexp, \mathit, \lambda, \perfectunary, \Pi, \scriptstyle,
+%	\value, \Bar}
 %
 % \providecommand*{\url}{\texttt}
 % \GetFileInfo{cpsystems.dtx}
@@ -356,7 +358,65 @@
 % 	  -- rewritten to make it fit inside the box.}
 % \end{cprulesetfloat}
 % 
-% Notice that the numbering of the rules in \autoref{rules:TSP2} carries on from those in the previous |cpruleset|, \autoref{rules:TSP}.
+% Notice that the numbering of the rules in \autoref{rules:TSP2} \emph{does not} carry on from those in the previous |cprulesetfloat|, \autoref{rules:TSP}.  This is different from the behaviour before version 0.19, where the rules did continue on by default.  Generally speaking, this is the desired behaviour.  If you do want rules to carry on from earlier, try out the |cprulesetcontnum| environment.  Let's give it a looksee now.  Check out \autoref{rules:TSP3}.
+% 
+% \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce \autoref{rules:TSP3},tabsize=2]
+% \begin{cprulesetfloat}
+% 	\begin{cprulesetcontnum}
+% 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
+% 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
+% 		
+% 		\cprule{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
+% 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
+% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		
+%		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
+%		 \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
+%		\newline  c(CW)}}
+%		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
+%		\cpfunc{p}{h(F) p(P)}~c(C)}}
+%		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		
+%		\cprule{s_2}{s(\_)}{+}{s_2}{}
+%		
+%		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
+%		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
+%		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+% 
+% 	\end{cprulesetcontnum}
+% 	\caption{\label{rules:TSP3} The five rules from \cite{Cooper2019},
+% 	 updated to the latest (at the time of writing) style for cP~systems
+% 	  -- rewritten to make it fit inside the box.}
+% \end{cprulesetfloat}
+% \end{Verbatim}
+% 
+% \begin{cprulesetfloat}
+% 	\begin{cprulesetcontnum}
+% 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
+% 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
+% 		
+% 		\cprule{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
+% 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
+% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		
+%		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
+%		 \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
+%		\newline  c(CW)}}
+%		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
+%		\cpfunc{p}{h(F) p(P)}~c(C)}}
+%		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		
+%		\cprule{s_2}{s(\_)}{+}{s_2}{}
+%		
+%		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
+%		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
+%		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+%
+% 	\end{cprulesetcontnum}
+% 	\caption{\label{rules:TSP3} The five rules from \cite{Cooper2019},
+% 	 updated to the latest (at the time of writing) style for cP~systems
+% 	  -- rewritten to make it fit inside the box.}
+% \end{cprulesetfloat}
 % 
 % \newpage This page has been left blank intentionally (excepting any floats that may end up here).  You'll see why in a moment.  \newpage \vspace*{0.1\textheight}
 % 
@@ -365,7 +425,6 @@
 % If, for some reason, you \emph{don't} want your ruleset floating, or to have a caption or label, you dont actually need to use the |cprulesetfloat| environment.  |cpruleset| is all you need for laying out rules.  Just, the results probably won't be as good:
 % 
 % \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce the unlabelled non-floating cpruleset,tabsize=2]
-% \cpresetrulenumber
 % \begin{cpruleset}
 %	\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
 %	\cpfunc{p}{h(R)p()}}~c(\lambda)}
@@ -390,7 +449,6 @@
 % \end{cpruleset}
 % \end{Verbatim}
 % 
-% \cpresetrulenumber
 %\begin{cpruleset}
 %	\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
 %	\cpfunc{p}{h(R)p()}}~c(\lambda)}
@@ -414,7 +472,7 @@
 %
 % \end{cpruleset}
 %
-% This has been carefully constructed to reveal another problem with this approach.  Without the floating environment, the ruleset is printed essentially exactly where it was declared, with the box of the |cpruleset| mostly printing on one page, but breaking and starting again on the next, but the text contained inside the environment is shifted down, overflowing the normal bottom margin for the main text.  I.e. the two become out-of-sync.  In this instance, whitespace was played around with to ensure this would happen (which is why an earlier page was left blank intentionally), but it happened by chance in an earlier draft of this documentation.  Also, in case you didn't notice, the |resetrulenumber| macro was used at the start of this to, well, reset the rule numbers.  Did it work?
+% This has been carefully constructed to reveal another problem with this approach.  Without the floating environment, the ruleset is printed essentially exactly where it was declared, with the box of the |cpruleset| mostly printing on one page, but breaking and starting again on the next, but the text contained inside the environment is shifted down, overflowing the normal bottom margin for the main text.  I.e. the two become out-of-sync.  In this instance, whitespace was played around with to ensure this would happen (which is why an earlier page was left blank intentionally), but it happened by chance in an earlier draft of this documentation.
 % 
 % \subsubsection{An inline cprule}
 % The |cpruleinline| macro is included to typeset a rule inside the main text without needing to create a full cpruleset environment.  The macro takes one parameter, a |cprulenonum| macro (you could probably use a regular |cprule| macro, but I'm not sure what will happen, except that the rule will probably get a number you could do without).  E.g.
@@ -541,7 +599,7 @@
 \RequirePackage{newfloat}
 \RequirePackage{perfectcut}
 
-\newcounter{cpsystems@RuleNum}
+
 %    \end{macrocode}
 %    
 %    \subsection{Environments}
@@ -551,14 +609,18 @@
 % \begin{environment}{cprulesetfloat}
 % A floating environment inside which |cpruleset| environments are to be placed.  This `wrapping' float provides both the floating capability, as well the ability to caption, label and reference |cprulesets|.
 %    \begin{macrocode}
-\DeclareFloatingEnvironment[name=Ruleset,within=none]{cprulesetfloat}
+\DeclareFloatingEnvironment[name=Ruleset,
+	listname={List of cP~systems Rulesets},within=none]
+	{cprulesetfloat}
 %    \end{macrocode}
 % \end{environment}
 %
 % \begin{environment}{cpobjectsfloat}
 % A floating environment inside which |cpobjects| environments are to be placed.  This `wrapping' float provides both the floating capability, as well the ability to caption, label and reference |cpobjects|.
 %    \begin{macrocode}
-\DeclareFloatingEnvironment[name=Objects Group,within=none]{cpobjectsfloat}
+\DeclareFloatingEnvironment[name=Objects Group,
+	listname={List of cP~systems Objects Groups},within=none]
+	{cpobjectsfloat}
 %    \end{macrocode}
 % \end{environment}
 % 
@@ -570,7 +632,20 @@
 \newenvironment{cpruleset}
 	{\begin{framed}\begin{adjustwidth}{-1.0em}{-1.0em}
 	\renewcommand{\arraystretch}{1.1}\[\begin{array}{lllllr}}
-	{\end{array}\]\end{adjustwidth}\end{framed}}
+	{\end{array}\]\end{adjustwidth}\end{framed}
+	\setcounter{cpsystems@RuleNumAlt}{\value{cpsystems@RuleNum}}}
+%    \end{macrocode}
+% \end{environment}
+%
+% \begin{environment}{cprulesetcontnum}
+% Identical to the regular cpruleset environment, except that this one restores the rule number that the previous ruleset had reached.  Use of this environment is \emph{usually} not recommended.
+%    \begin{macrocode}
+\newenvironment{cprulesetcontnum}
+	{\setcounter{cpsystems@RuleNum}{\value{cpsystems@RuleNumAlt}}
+	\begin{framed}\begin{adjustwidth}{-1.0em}{-1.0em}
+	\renewcommand{\arraystretch}{1.1}\[\begin{array}{lllllr}}
+	{\end{array}\]\end{adjustwidth}\end{framed}
+	\setcounter{cpsystems@RuleNumAlt}{\value{cpsystems@RuleNum}}}
 %    \end{macrocode}
 % \end{environment}
 %
@@ -612,10 +687,12 @@
 % \begin{macro}{\cprule}
 % For writing out a rule inside a |cpruleset| environment, as well as displaying and incrementing the rule number.
 % Required arguments are, in order, beginning state name; LHS of rule; the label to be applied to the arrow; the ending state name; the RHS of the rule.
+% Also can take an optional argument, specifying the measurement of hspace to put in between the RHS and rule number.
 %    \begin{macrocode}
-\newcommand{\cprule}[5]{
+\newcommand{\cprule}[6][1.5em]{
     \refstepcounter{cpsystems@RuleNum}
-    \cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{\hspace{4.0em}(\arabic{cpsystems@RuleNum})}
+    \cpsystems@basecprule{#2}{#3}{#4}{#5}{#6}
+	{\hspace{#1}(\arabic{cpsystems@RuleNum})}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -717,6 +794,7 @@
 %    \begin{macrocode}
 \newcommand*{\cpchangerulenumber}[1]{
 	\setcounter{cpsystems@RuleNum}{#1}
+	\setcounter{cpsystems@RuleNumAlt}{#1}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -746,7 +824,7 @@
 \newcommand*{\cpmaxpar}{{\scriptstyle +}}
 %    \end{macrocode}
 % \end{macro}
-% 
+%
 %
 %
 %
@@ -766,7 +844,7 @@
 % \begin{macro}{\cpset}
 % Used for presenting a list of objects that are meant to be in the same set.  Currently doesn't get used much, might be removed in the future.
 %    \begin{macrocode}
-\newcommand*{\cpset}[1]{\perfectunary{IncreaseHeight}{\{}{\}}{#1}}
+\newcommand*{\cpset}[1]{\cpsystems@perfuncurlies{#1}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -778,7 +856,7 @@
 % The first argument is the symbol for the functor itself, and the second argument is the objects contained inside the functor.
 %    \begin{macrocode}
 \newcommand*{\cpfunc}[2]{
-	\trim@spaces@noexp{#1\perfectunary{IncreaseHeight}{(}{)}{#2}}
+	\trim@spaces@noexp{#1\cpsystems@perfunparens{#2}}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -789,7 +867,47 @@
 % Currently the only difference between this and the |cpfunc| command is the nature of the brackets used -- regular |cpfunc|s use parentheses, while micro-surgery functors use curly braces.  Both (but especially the latter) are potentially subject to change in the future.  Thus, one of the reasons why it is recommended to use these commands is that it will be much easier to change all your micro-surgery functors in future if the style changes.  Another reason is that these play nicely with the regular |cpfunc|s to give you automatically growing brackets.
 %    \begin{macrocode}
 \newcommand*{\cpfuncms}[2]{
-	\trim@spaces@noexp{#1\perfectunary{IncreaseHeight}{\{}{\}}{#2}}
+	\trim@spaces@noexp{#1\cpsystems@perfuncurlies{#2}}
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\cpfuncn}
+% Command for declaring a three-level cP~systems indexed functor.
+% The first argument is the symbol for the functor itself, the second argument is the objects contained inside the first part of the term, and the third argument the bit contained inside the last term.
+%    \begin{macrocode}
+\newcommand*{\cpfuncn}[3]{
+	\cpfunc{#1}{#2}\cpsystems@perfunparens{#3}
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\cpfuncnms}
+% Command for declaring a three-level cP~systems indexed functor with a micro-surgery on the end part.
+% The first argument is the symbol for the functor itself, the second argument is the objects contained inside the first part of the term, and the third argument the bit contained inside the last term, which is the micro-surgical part.
+%    \begin{macrocode}
+\newcommand*{\cpfuncnms}[3]{
+	\cpfunc{#1}{#2}\cpsystems@perfuncurlies{#3}
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\cpfuncnn}
+% Command for declaring a four-level cP~systems indexed functor.
+% The first argument is the symbol for the functor itself, the second argument is the objects contained inside the first part of the term, the third argument the bit contained inside next part, and the fourth the bit contained in the last part of the term.
+%    \begin{macrocode}
+\newcommand*{\cpfuncnn}[4]{
+	\cpfuncn{#1}{#2}{#3}\cpsystems@perfunparens{#4}
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\cpfuncnnms}
+% Command for declaring a three-level cP~systems indexed functor with a micro-surgery on the end part.
+% The first argument is the symbol for the functor itself, the second argument is the objects contained inside the first part of the term, the third argument the bit contained inside next part, and the fourth the bit contained in the last part of the term, which is the micro-surgical part.
+%    \begin{macrocode}
+\newcommand*{\cpfuncnnms}[4]{
+	\cpfuncn{#1}{#2}{#3}\cpsystems@perfuncurlies{#4}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -817,9 +935,25 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\cpdiscard}
+% A minor convenience macro, to typeset the `discard/don't care' symbol used in cP~systems in the ``correct'' way in rules.  Honestly, in this instance the underlying command is much shorter, but this is thought of as slightly `safer' (it's quite easy to muck things up with the underscore), communicates intent better, and moreover use of this makes it much easier to change to using a different symbol if desired.
+%    \begin{macrocode}
+\newcommand*{\cpdiscard}{\_}
+%    \end{macrocode}
+% \end{macro}
+% 
+%
 % 
 % \subsection{Internal}
 % Macros that are only intended to be used inside the package, and probably shouldn't be used outside of it.  Much as if the previous macros are all the public interface of the package, while these ones are the private implementation details.
+%
+%
+% \subsubsection{Counters}
+% A couple of counters used for tracking rules numbers.
+%    \begin{macrocode}
+	\newcounter{cpsystems@RuleNum}[cprulesetfloat]
+	\newcounter{cpsystems@RuleNumAlt}
+%    \end{macrocode}
 % 
 % \begin{macro}{\cpsystems@basecprule}
 % For writing out rules inside a |cpruleset| environment.
@@ -844,11 +978,28 @@
 % Base rule which both |\cpsend| and |\cprecv| make use of.  This is a ``single source of truth'', and means only one place needs to be changed to change the brackets which encapsulate messages.
 %    \begin{macrocode}
 \newcommand{\cpsystems@basecpsendrecv}[3]{
-    \trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}{#3}_{#2}}
+    \trim@spaces@noexp{\cpsystems@perfuncurlies{#1}{#3}_{#2}}
 }
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\cpsystems@perfunparens}
+% Convencience rule used to provide the wrapping of other things in auto-growing parentheses.  Introduced because I found I was starting to copy-paste the raw command frequently.
+%    \begin{macrocode}
+\newcommand{\cpsystems@perfunparens}[1]{
+    \trim@spaces@noexp{\perfectunary{IncreaseHeight}{(}{)}{#1}}
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\cpsystems@perfuncurlies}
+% Convencience rule used to provide the wrapping of other things in auto-growing curly braces.  Introduced because I found I was starting to copy-paste the raw command frequently.
+%    \begin{macrocode}
+\newcommand{\cpsystems@perfuncurlies}[1]{
+    \trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}}
+}
+%    \end{macrocode}
+% \end{macro}
 %
 % \section{Possible improvements}
 % A handful of possible improvements have been thought of already, though in most cases it is entirely unclear how to achieve them at this point.  They include:
