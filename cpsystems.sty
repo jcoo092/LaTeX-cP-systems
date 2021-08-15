@@ -20,22 +20,24 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[2011/06/27]
 \ProvidesPackage{cpsystems}
-[2021/08/11 v0.19 Package to aid in typesetting cP systems
+[2021/08/15 v0.20 Package to aid in typesetting cP systems
 rulesets, following Nicolescu's standard style]
-
+\RequirePackage{amsmath}
 \RequirePackage{array}
+\RequirePackage{etoolbox}
 \RequirePackage{framed}
 \RequirePackage{changepage}
-\RequirePackage{amsmath}
 \RequirePackage{trimspaces}
 \RequirePackage{newfloat}
 \RequirePackage{perfectcut}
-
+\RequirePackage[user]{zref}
 \DeclareFloatingEnvironment[name=Ruleset,
-listname={List of cP~systems Rulesets},within=none]
+listname={List of cP~systems Rulesets},within=none,
+placement={htbp},]
 {cprulesetfloat}
 \DeclareFloatingEnvironment[name=Objects Group,
-listname={List of cP~systems Objects Groups},within=none]
+listname={List of cP~systems Objects Groups},within=none,
+placement={htbp},]
 {cpobjectsfloat}
 \newenvironment{cpruleset}
 {\begin{framed}\begin{adjustwidth}{-1.0em}{-1.0em}
@@ -57,10 +59,11 @@ listname={List of cP~systems Objects Groups},within=none]
 \newcommand*{\cptupletemplate}{
     \cptuple{cP}{T}{A}{O}{R}{S}{\Bar{s}}
 }
-\newcommand{\cprule}[6][1.5em]{
+\newcommand{\cprule}[6][]{
     \refstepcounter{cpsystems@RuleNum}
+    \notblank{#1}{\zref@label{#1}}{}
     \cpsystems@basecprule{#2}{#3}{#4}{#5}{#6}
-{\hspace{#1}(\arabic{cpsystems@RuleNum})}
+{\hspace{1.5em}(\thecpsystems@RuleNum)}
 }
 \newcommand{\cpruleinline}[1]{
 \[\begin{array}{lllllr}#1\end{array}\]
@@ -98,50 +101,60 @@ listname={List of cP~systems Objects Groups},within=none]
 }
 \newcommand*{\cponce}{{\scriptstyle 1}}
 \newcommand*{\cpmaxpar}{{\scriptstyle +}}
+\newcommand{\ruleref}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{rule \zref{#1}}}
+\newcommand{\rulerefalt}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{\zref{#1}}}
 \newcommand{\cpobjectsline}[1]{
 \[#1\]
 }
-\newcommand*{\cpset}[1]{\cpsystems@perfuncurlies{#1}}
+\newcommand*{\cpset}[1]{\cpsystems@perfuncurly{#1}}
 \newcommand*{\cpfunc}[2]{
-\trim@spaces@noexp{#1\cpsystems@perfunparens{#2}}
+#1\cpsystems@perfunparens{#2}
 }
 \newcommand*{\cpfuncms}[2]{
-\trim@spaces@noexp{#1\cpsystems@perfuncurlies{#2}}
+#1\cpsystems@perfuncurly{#2}
 }
 \newcommand*{\cpfuncn}[3]{
 \cpfunc{#1}{#2}\cpsystems@perfunparens{#3}
 }
 \newcommand*{\cpfuncnms}[3]{
-\cpfunc{#1}{#2}\cpsystems@perfuncurlies{#3}
+\cpfunc{#1}{#2}\cpsystems@perfuncurly{#3}
 }
 \newcommand*{\cpfuncnn}[4]{
 \cpfuncn{#1}{#2}{#3}\cpsystems@perfunparens{#4}
 }
 \newcommand*{\cpfuncnnms}[4]{
-\cpfuncn{#1}{#2}{#3}\cpsystems@perfuncurlies{#4}
+\cpfuncn{#1}{#2}{#3}\cpsystems@perfuncurly{#4}
 }
-\newcommand*{\cpterm}[2]{
+\newcommand*{\cptermdef}[2]{
 \item[$#1$]#2
 }
 \newcommand*{\cpundig}{\mathit{1}}
 \newcommand*{\cpempty}{\lambda}
 \newcommand*{\cpdiscard}{\_}
+\AfterPreamble{
+    \ifdef{\crefname}
+        {\crefname{cprulesetfloat}{ruleset}{rulesets}
+        \crefname{cpobjectsfloat}{objects group}{objects groups}}
+    {}
+}
 \newcounter{cpsystems@RuleNum}[cprulesetfloat]
 \newcounter{cpsystems@RuleNumAlt}
+\zref@newprop{cpsystems@ruleslabel}[Doc-Start]{}
+\zref@addprop{main}{cpsystems@ruleslabel}
 \newcommand{\cpsystems@basecprule}[6]{
-    \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5  & #6\\}
+    #1 & #2 & \rightarrow_{#3} & #4 & #5 & #6\\
 }
 \newcommand{\cpsystems@cpprominhi}[2]{
-    \trim@spaces@noexp{& & & & ~ \hspace{1em} ~ #1 ~ #2 & \\}
+    & & & & ~ \hspace{1em} ~ #1 ~ #2 & \\
 }
 \newcommand{\cpsystems@basecpsendrecv}[3]{
-    \trim@spaces@noexp{\cpsystems@perfuncurlies{#1}{#3}_{#2}}
+    \cpsystems@perfuncurly{#1}{#3}_{#2}
 }
 \newcommand{\cpsystems@perfunparens}[1]{
-    \trim@spaces@noexp{\perfectunary{IncreaseHeight}{(}{)}{#1}}
+    \perfectunary{IncreaseHeight}{(}{)}{#1}
 }
-\newcommand{\cpsystems@perfuncurlies}[1]{
-    \trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}}
+\newcommand{\cpsystems@perfuncurly}[1]{
+    \perfectunary{IncreaseHeight}{\{}{\}}{#1}
 }
 \endinput
 %%

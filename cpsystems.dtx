@@ -64,7 +64,7 @@
 %</driver>
 % \fi
 %
-% \changes{0.20}{2021/08/15}{Rename \texttt{cpterm} to \texttt{cptermdefdef} to reflect the fact that it used to provide the definition of a cP systems term, and not somehow declare one or anything.}
+% \changes{0.20}{2021/08/15}{Introduce the \texttt{ruleref} and \texttt{rulerefalt} commands.  This (sadly) means that, at present, you \emph{cannot} adjust a rule's spacing between the RHS and the rule number.  Rename \texttt{cpterm} to \texttt{cptermdefdef} to reflect the fact that it used to provide the definition of a cP systems term, and not somehow declare one or anything.  Add in some setup stuff so that this package's floating environments work with basic usage of the cleveref package.}
 % \changes{0.19}{2021/08/11}{Most importantly, changed the default behaviour of rules numbers --- now, they no longer continue on from one ruleset to the next by default.  Instead, they reset at each new \texttt{cprulesetfloat}.  Added commands for the \texttt{cpfuncn} and \texttt{cpfuncnms} stuff.  Modified the \texttt{cprule} definition to permit the optional width adjustment.  Introduced the (basically untested) \texttt{cprulsetcontnum} environment, and the \texttt{cpdiscard} command.  Also added in the internal \texttt{perfunXXX} macros to tidy up the definitions of other macros.}
 % \changes{0.18}{2021/07/14}{Added in \texttt{cprulecustnum}, \texttt{cpantirecv}, \texttt{cpantisend}, \texttt{cptuple}, \texttt{cptupetemplate}, \texttt{cponce}, \texttt{cpmaxpar}, \texttt{cpset}.  Adjusted the arraystretch for rules slightly (from 1.0 to 1.1).   Prefixed \texttt{changerulenumber} and \texttt{resetrulenumber} with \texttt{cp}.  }
 % \changes{0.17}{2021/03/17}{Remove the ending dot from \texttt{cpterm}.  Adjust \texttt{cpsend} and \texttt{cprecv} to use a single internal base rule.  Removed the \texttt{cps} command, to avoid potential conflicts with other packages.  I have found defining cP systems as a glossary term to be a superior alternative anyway.  Changed \texttt{cpresetrulenumber} to make use of \texttt{cpchangerulenumber}, instead of replicating the functionality.}
@@ -79,7 +79,7 @@
 % \DoNotIndex{\[, \{, \], \}, \\, \_}
 %
 % \DoNotIndex{\arabic, \arraystretch, \begin, \big, \DeclareFloatingEnvironment, \end, \hspace, \item, \NeedsTeXFormat, \neg, \newcommand, \newcounter, \setcounter,
-%	\newenvironment, \ProvidesPackage, \refstepcounter, \renewcommand, \RequirePackage, \rightarrow, \trim@spaces@noexp, \mathit, \lambda, \perfectunary, \Pi, \scriptstyle,
+%	\newenvironment, \ProvidesPackage, \refstepcounter, \renewcommand, \RequirePackage, \rightarrow, \mathit, \lambda, \perfectunary, \Pi, \scriptstyle,
 %	\value, \Bar}
 %
 % \providecommand*{\url}{\texttt}
@@ -298,20 +298,22 @@
 % 	\caption{\label{rules:TSP} The five rules from \cite{Cooper2019},
 % 	 updated to the latest (at the time of writing) style for cP~systems.}
 % \end{cprulesetfloat}
+%
+% At the present point in time, the paragraph following this one is a total lie.  It \emph{used} to be the case that everything was re-arranged to make it all fit nicely in the box, but since introducing the auto-growing brackets, this hasn't worked.  For some reason I have yet to work out, |\cpfunc| and similar friends hit a compilation error when there is an attempt at a newline inside them.  Given that by far the longest parts of some rules are one big long |\cpfunc|, this prevents adjusting things properly.  It probably has something to do with the perfectcut package that I use to get the auto-growing brackets, but I haven't figured out the problem yet.
 % 
-% There is, however, an extremely obvious problem with \autoref{rules:TSP} -- much of it extends beyond the box.  That is partly a product of the narrow margins for the main text body of the current document class, but with rules of any real length this is an inevitability really, if the entire thing is set onto a single line.  The solution, therefore, is to split the wider parts over multiple lines, thereby permitting the array to narrow each individual field, and thus fit everything inside the box.  Unfortunately, at present there is no \emph{good} way to do this.  The way to achieve it is simply to include a line break (i.e. \Verb+\\+) and then an appropriate number of ampersands (\&) to bring the array back into alignment, as demonstrated in \autoref{rules:TSP2}.  It is important (and sometimes slightly tricky) to get the number of ampersands exactly correct.  The wrong number can either lead to errors from the \LaTeX{} compiler and/or part of a rule appearing in a different column to the intended one.
+% There is, however, an extremely obvious problem with \autoref{rules:TSP} -- much of it extends beyond the box.  That is partly a product of the narrow margins for the main text body of the current document class, but with rules of any real length this is an inevitability really, if the entire thing is set onto a single line.  The solution, therefore, is to split the wider parts over multiple lines, thereby permitting the array to narrow each individual field, and thus fit everything inside the box.  Unfortunately, at present there is no \emph{good} way to do this.  The way to achieve it is simply to include a line break (i.e. \Verb+\\+) and then an appropriate number of ampersands (|&|) to bring the array back into alignment, as demonstrated in \autoref{rules:TSP2}.  It is important (and sometimes slightly tricky) to get the number of ampersands exactly correct.  The wrong number can either lead to errors from the \LaTeX{} compiler and/or part of a rule appearing in a different column to the intended one.
 % 
 % \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce \autoref{rules:TSP2},tabsize=2]
 % \begin{cprulesetfloat}
 % 	\begin{cpruleset}
-% 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
-% 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
+% 		\cprule[rule:1]{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
+% 		\cpfunc{p}{h(R)p()}} &\\&&&& c(\lambda)}
 % 		
 % 		\cprule{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
 % 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
 % 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
 %		
-%		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
+%		\cprule[rule:2]{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
 %		 \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
 %		\newline  c(CW)}}
 %		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
@@ -333,14 +335,14 @@
 % 
 % \begin{cprulesetfloat}
 % 	\begin{cpruleset}
-% 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
-% 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
+% 		\cprule[rule:1]{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
+% 		\cpfunc{p}{h(R)p()}} &\\&&&& c(\lambda)}
 % 		
 % 		\cprule{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
 % 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
 % 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
 %		
-%		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
+%		\cprule[rule:2]{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
 %		 \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
 %		\newline  c(CW)}}
 %		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
@@ -367,7 +369,7 @@
 % 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
 % 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
 % 		
-% 		\cprule{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
+% 		\cprule[rule:3]{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
 % 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
 % 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
 %		
@@ -380,7 +382,7 @@
 %		
 %		\cprule{s_2}{s(\_)}{+}{s_2}{}
 %		
-%		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
+%		\cprule[rule:4]{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
 %		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
 %		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
 % 
@@ -396,7 +398,7 @@
 % 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
 % 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
 % 		
-% 		\cprule{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
+% 		\cprule[rule:3]{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
 % 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
 % 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
 %		
@@ -409,7 +411,7 @@
 %		
 %		\cprule{s_2}{s(\_)}{+}{s_2}{}
 %		
-%		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
+%		\cprule[rule:4]{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
 %		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
 %		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
 %
@@ -418,6 +420,9 @@
 % 	 updated to the latest (at the time of writing) style for cP~systems
 % 	  -- rewritten to make it fit inside the box.}
 % \end{cprulesetfloat}
+%
+% \subsubsection{Rules cross-references}
+% If you were paying close attention, you probably would have noticed the optional parameters to some rules in the previous two rulesets.  Something along the lines of |[rule:1]|.  These optional arguments are used to give labels to rules in rulesets, if desired --- a label is only generated if the optional argument is used (and is non-empty).  To use them, you need to use the custom |\ruleref| command, with the label name, e.g. |\ruleref{rule:2}| produces the text ``\ruleref{rule:2}''.  Currently, there's nothing more to it than that.  You could also use |\rulerefalt{rule:2}| to get ``\rulerefalt{rule:2}'', i.e., the number but not the word rule.
 % 
 % \newpage This page has been left blank intentionally (excepting any floats that may end up here).  You'll see why in a moment.  \newpage \vspace*{0.1\textheight}
 % 
@@ -590,8 +595,6 @@
 % \subsection{Preamble}
 %
 %    \begin{macrocode}
-%
-
 \RequirePackage{amsmath}
 \RequirePackage{array}
 \RequirePackage{etoolbox}
@@ -600,8 +603,7 @@
 \RequirePackage{trimspaces}
 \RequirePackage{newfloat}
 \RequirePackage{perfectcut}
-
-
+\RequirePackage[user]{zref}
 %    \end{macrocode}
 %    
 %    \subsection{Environments}
@@ -693,10 +695,11 @@
 % Required arguments are, in order, beginning state name; LHS of rule; the label to be applied to the arrow; the ending state name; the RHS of the rule.
 % Also can take an optional argument, specifying the measurement of hspace to put in between the RHS and rule number.
 %    \begin{macrocode}
-\newcommand{\cprule}[6][1.5em]{
+\newcommand{\cprule}[6][]{
     \refstepcounter{cpsystems@RuleNum}
+    \notblank{#1}{\zref@label{#1}}{}
     \cpsystems@basecprule{#2}{#3}{#4}{#5}{#6}
-	{\hspace{#1}(\arabic{cpsystems@RuleNum})}
+	{\hspace{1.5em}(\thecpsystems@RuleNum)}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -829,7 +832,19 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\ruleref}
+% The below is used to enable cross-referencing for rules numbers.  It was adapated from this TeX.StackExchange answer: \url{https://tex.stackexchange.com/a/610616/113430}.  Many thanks to Ulrike Fischer for it.  At current, I am using a basic implementation which does \emph{not} have any hyperlinking capabilities or anything.  I want to figure out how this all works a bit more before I get into anything fancy --- and I don't want to introduce a dependency of hyperref just yet.
+%    \begin{macrocode}
+\newcommand{\ruleref}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{rule \zref{#1}}}
+%    \end{macrocode}
+% \end{macro}
 %
+% \begin{macro}{\rulerefalt}
+% Much the same as |\ruleref|, but \emph{doesn't} include the word ``rule''.  I called it |\rulerefalt| because I seemed to be having some sort of issue with getting everything to work calling it |\ruleref*|.
+%    \begin{macrocode}
+\newcommand{\rulerefalt}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{\zref{#1}}}
+%    \end{macrocode}
+% \end{macro}
 %
 %
 % 
@@ -860,7 +875,7 @@
 % The first argument is the symbol for the functor itself, and the second argument is the objects contained inside the functor.
 %    \begin{macrocode}
 \newcommand*{\cpfunc}[2]{
-	\trim@spaces@noexp{#1\cpsystems@perfunparens{#2}}
+	#1\cpsystems@perfunparens{#2}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -871,7 +886,7 @@
 % Currently the only difference between this and the |cpfunc| command is the nature of the brackets used -- regular |cpfunc|s use parentheses, while micro-surgery functors use curly braces.  Both (but especially the latter) are potentially subject to change in the future.  Thus, one of the reasons why it is recommended to use these commands is that it will be much easier to change all your micro-surgery functors in future if the style changes.  Another reason is that these play nicely with the regular |cpfunc|s to give you automatically growing brackets.
 %    \begin{macrocode}
 \newcommand*{\cpfuncms}[2]{
-	\trim@spaces@noexp{#1\cpsystems@perfuncurly{#2}}
+	#1\cpsystems@perfuncurly{#2}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -972,13 +987,23 @@
 \newcounter{cpsystems@RuleNumAlt}
 %    \end{macrocode}
 % \end{macro}
+%
+% \subsubsection{Internal commands for cross-referencing of rules numbers}
+% \begin{macro}{\ruleref}
+% The below is used to enable cross-referencing for rules numbers.  It was adapated from this TeX.StackExchange answer: \url{https://tex.stackexchange.com/a/610616/113430}.  Many thanks to Ulrike Fischer for it.  At current, I am using a basic implementation which does \emph{not} have any hyperlinking capabilities or anything.  I want to figure out how this all works a bit more before I get into anything fancy --- and I don't want to introduce a dependency of hyperref just yet.
+%    \begin{macrocode}
+\zref@newprop{cpsystems@ruleslabel}[Doc-Start]{}
+\zref@addprop{main}{cpsystems@ruleslabel}
+%    \end{macrocode}
+% \end{macro}
 % 
+% \subsubsection{Internal commands}
 % \begin{macro}{\cpsystems@basecprule}
 % For writing out rules inside a |cpruleset| environment.
 % Required arguments are, in order, beginning state name; LHS of rule; the label to be applied to the arrow; the ending state name; the RHS of the rule.
 %    \begin{macrocode}
 \newcommand{\cpsystems@basecprule}[6]{
-    \trim@spaces@noexp{#1 & #2 & \rightarrow_{#3} & #4 & #5 	& #6\\}
+    #1 & #2 & \rightarrow_{#3} & #4 & #5 & #6\\
 }
 %    \end{macrocode}
 % \end{macro}
@@ -987,7 +1012,7 @@
 % For writing out promoters and inhibitors in a |cpruleset| environment.
 %    \begin{macrocode}
 \newcommand{\cpsystems@cpprominhi}[2]{
-    \trim@spaces@noexp{& & & & ~ \hspace{1em} ~ #1 ~ #2 & \\}
+    & & & & ~ \hspace{1em} ~ #1 ~ #2 & \\
 }
 %    \end{macrocode}
 % \end{macro}
@@ -996,25 +1021,25 @@
 % Base rule which both |\cpsend| and |\cprecv| make use of.  This is a ``single source of truth'', and means only one place needs to be changed to change the brackets which encapsulate messages.
 %    \begin{macrocode}
 \newcommand{\cpsystems@basecpsendrecv}[3]{
-    \trim@spaces@noexp{\cpsystems@perfuncurly{#1}{#3}_{#2}}
+    \cpsystems@perfuncurly{#1}{#3}_{#2}
 }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\cpsystems@perfunparens}
-% Convencience rule used to provide the wrapping of other things in auto-growing parentheses.  Introduced because I found I was starting to copy-paste the raw command frequently.
+% Convenience rule used to provide the wrapping of other things in auto-growing parentheses.  Introduced because I found I was starting to copy-paste the raw command frequently.
 %    \begin{macrocode}
 \newcommand{\cpsystems@perfunparens}[1]{
-    \trim@spaces@noexp{\perfectunary{IncreaseHeight}{(}{)}{#1}}
+    \perfectunary{IncreaseHeight}{(}{)}{#1}
 }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\cpsystems@perfuncurly}
-% Convencience rule used to provide the wrapping of other things in auto-growing curly braces.  Introduced because I found I was starting to copy-paste the raw command frequently.
+% Convenience rule used to provide the wrapping of other things in auto-growing curly braces.  Introduced because I found I was starting to copy-paste the raw command frequently.
 %    \begin{macrocode}
 \newcommand{\cpsystems@perfuncurly}[1]{
-    \trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}}
+    \perfectunary{IncreaseHeight}{\{}{\}}{#1}
 }
 %    \end{macrocode}
 % \end{macro}
