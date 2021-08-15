@@ -43,13 +43,13 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[2011/06/27]
 %<package>\ProvidesPackage{cpsystems}
 %<*package>
-[2021/08/11 v0.19 Package to aid in typesetting cP systems 
+[2021/08/15 v0.20 Package to aid in typesetting cP systems 
 	rulesets, following Nicolescu's standard style]
 %</package>
 %
 %<*driver>
 \documentclass{ltxdoc}
-\usepackage{cpsystems}[2021/08/11 v0.19]
+\usepackage{cpsystems}[2021/08/15 v0.20]
 \usepackage{fancyvrb}
 \usepackage[hidelinks]{hyperref}
 \EnableCrossrefs
@@ -64,6 +64,7 @@
 %</driver>
 % \fi
 %
+% \changes{0.20}{2021/08/15}{Rename \texttt{cpterm} to \texttt{cptermdefdef} to reflect the fact that it used to provide the definition of a cP systems term, and not somehow declare one or anything.}
 % \changes{0.19}{2021/08/11}{Most importantly, changed the default behaviour of rules numbers --- now, they no longer continue on from one ruleset to the next by default.  Instead, they reset at each new \texttt{cprulesetfloat}.  Added commands for the \texttt{cpfuncn} and \texttt{cpfuncnms} stuff.  Modified the \texttt{cprule} definition to permit the optional width adjustment.  Introduced the (basically untested) \texttt{cprulsetcontnum} environment, and the \texttt{cpdiscard} command.  Also added in the internal \texttt{perfunXXX} macros to tidy up the definitions of other macros.}
 % \changes{0.18}{2021/07/14}{Added in \texttt{cprulecustnum}, \texttt{cpantirecv}, \texttt{cpantisend}, \texttt{cptuple}, \texttt{cptupetemplate}, \texttt{cponce}, \texttt{cpmaxpar}, \texttt{cpset}.  Adjusted the arraystretch for rules slightly (from 1.0 to 1.1).   Prefixed \texttt{changerulenumber} and \texttt{resetrulenumber} with \texttt{cp}.  }
 % \changes{0.17}{2021/03/17}{Remove the ending dot from \texttt{cpterm}.  Adjust \texttt{cpsend} and \texttt{cprecv} to use a single internal base rule.  Removed the \texttt{cps} command, to avoid potential conflicts with other packages.  I have found defining cP systems as a glossary term to be a superior alternative anyway.  Changed \texttt{cpresetrulenumber} to make use of \texttt{cpchangerulenumber}, instead of replicating the functionality.}
@@ -224,8 +225,8 @@
 % Exactly the same as a regular |cpfunc| except this one is for functors subject to micro-surgeries, and so uses curly braces instead of parentheses.  It uses curly braces because currently that is the correct style for typesetting micro-surgeries.  That is potentially subject to change in the future, so you should probably opt to use this macro instead of doing it by hand, to save yourself some hassle if/when the style does change.  Moreover, using this macro means that you get auto-growing brackets with micro-surgery functors as well as regular ones.
 %
 % \noindent
-% \DescribeMacro{\cpterm}
-% This command is used to explain the meaning of a given cP systems term/symbol.  E.g. if you have a functor such as \(a(b)\), you might use |\cpterm| entries to explain the meanings of both the \(a\) functor and \(b\) atom.  Note that the current implementation of this command automatically includes a full stop/period at the end of the description -- so if you include one inside the description, you will get a double dot.  It is generally recommended to encapsulate these definitions inside a |description| environment, which ends up with everything set out pretty well.  Further, separating out the atoms from the functors from the states is also recommended.  So far, using a |paragraph| command to give the relevant title to each one, followed by a |description| with the |cpterm|s inside that seems to work out pretty well.
+% \DescribeMacro{\cptermdef}
+% This command is used to explain the meaning of a given cP systems term/symbol.  E.g. if you have a functor such as \(a(b)\), you might use |\cptermdef| entries to explain the meanings of both the \(a\) functor and \(b\) atom.  Note that the current implementation of this command automatically includes a full stop/period at the end of the description -- so if you include one inside the description, you will get a double dot.  It is generally recommended to encapsulate these definitions inside a |description| environment, which ends up with everything set out pretty well.  Further, separating out the atoms from the functors from the states is also recommended.  So far, using a |paragraph| command to give the relevant title to each one, followed by a |description| with the |cptermdef|s inside that seems to work out pretty well.
 %
 % \noindent
 % \DescribeMacro{\cpundig}
@@ -548,28 +549,28 @@
 %
 %
 % \subsubsection{cP terms}
-% This example demonstrates the use of the |cpterm| command for stating definitions of the different cP systems terms used in a paper.
+% This example demonstrates the use of the |cptermdef| command for stating definitions of the different cP systems terms used in a paper.
 % 
-% It is strongly recommended that you use a |description| environment in which each of the |cpterm| commands are encapsulated.  Further, heading up the collection with a |paragraph| command for providing a heading seems to be a good idea.  Such an example is shown below, `explaining' some of the symbols that appear in \autoref{rules:TSP2}:
+% It is strongly recommended that you use a |description| environment in which each of the |cptermdef| commands are encapsulated.  Further, heading up the collection with a |paragraph| command for providing a heading seems to be a good idea.  Such an example is shown below, `explaining' some of the symbols that appear in \autoref{rules:TSP2}:
 % 
 % \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce a brief example of the use of cP terms,tabsize=2]
 % \paragraph{cP systems terms used}
 % \begin{description}
-% 		\cpterm{v}{A functor containing very vacuous varieties of vegetables}
-% 		\cpterm{s}{A functor containing simply sublime serpentine sausages}
-% 		\cpterm{f}{A fiendish \& frightening flash of the fraught folly of including your own full stop.  Except, the behaviour changed and now |\cpterm| no longer puts a `.' at the end of every term, since there were occassions when it would be a bad thing.}
-% 		\cpterm{a}{a is for \texttt{atom}.  To quote Radioactive Man:  Up and atom!}
-% 		\cpterm{s_1}{The starting state, wherein one states the obvious, subtly}
+% 		\cptermdef{v}{A functor containing very vacuous varieties of vegetables}
+% 		\cptermdef{s}{A functor containing simply sublime serpentine sausages}
+% 		\cptermdef{f}{A fiendish \& frightening flash of the fraught folly of including your own full stop.  Except, the behaviour changed and now |\cptermdef| no longer puts a `.' at the end of every term, since there were occassions when it would be a bad thing.}
+% 		\cptermdef{a}{a is for \texttt{atom}.  To quote Radioactive Man:  Up and atom!}
+% 		\cptermdef{s_1}{The starting state, wherein one states the obvious, subtly}
 % \end{description}
 % \end{Verbatim}
 % 
 % \paragraph{cP systems terms used}
 % \begin{description}
-% 		\cpterm{v}{A functor containing very vacuous varieties of vegetables}
-% 		\cpterm{s}{A functor containing simply sublime serpentine sausages}
-% 		\cpterm{f}{A fiendish \& frightening flash of the fraught folly of including your own full stop.  Except, the behaviour changed and now \texttt{cpterm} no longer puts a `.' at the end of every term's description, since there were occassions when it would be a bad thing.\texttrademark}
-% 		\cpterm{a}{a is for \texttt{atom}.  To quote Radioactive Man:  Up and atom!}
-% 		\cpterm{s_1}{The starting state, wherein one states the obvious, subtly}
+% 		\cptermdef{v}{A functor containing very vacuous varieties of vegetables}
+% 		\cptermdef{s}{A functor containing simply sublime serpentine sausages}
+% 		\cptermdef{f}{A fiendish \& frightening flash of the fraught folly of including your own full stop.  Except, the behaviour changed and now \texttt{cptermdef} no longer puts a `.' at the end of every term's description, since there were occassions when it would be a bad thing.\texttrademark}
+% 		\cptermdef{a}{a is for \texttt{atom}.  To quote Radioactive Man:  Up and atom!}
+% 		\cptermdef{s_1}{The starting state, wherein one states the obvious, subtly}
 % \end{description}
 % 
 % 
@@ -591,10 +592,11 @@
 %    \begin{macrocode}
 %
 
+\RequirePackage{amsmath}
 \RequirePackage{array}
+\RequirePackage{etoolbox}
 \RequirePackage{framed}
 \RequirePackage{changepage}
-\RequirePackage{amsmath}
 \RequirePackage{trimspaces}
 \RequirePackage{newfloat}
 \RequirePackage{perfectcut}
@@ -610,7 +612,8 @@
 % A floating environment inside which |cpruleset| environments are to be placed.  This `wrapping' float provides both the floating capability, as well the ability to caption, label and reference |cprulesets|.
 %    \begin{macrocode}
 \DeclareFloatingEnvironment[name=Ruleset,
-	listname={List of cP~systems Rulesets},within=none]
+	listname={List of cP~systems Rulesets},within=none,
+	placement={htbp},]
 	{cprulesetfloat}
 %    \end{macrocode}
 % \end{environment}
@@ -619,7 +622,8 @@
 % A floating environment inside which |cpobjects| environments are to be placed.  This `wrapping' float provides both the floating capability, as well the ability to caption, label and reference |cpobjects|.
 %    \begin{macrocode}
 \DeclareFloatingEnvironment[name=Objects Group,
-	listname={List of cP~systems Objects Groups},within=none]
+	listname={List of cP~systems Objects Groups},within=none,
+	placement={htbp},]
 	{cpobjectsfloat}
 %    \end{macrocode}
 % \end{environment}
@@ -627,7 +631,7 @@
 % \subsubsection{Maths mode environments}
 %
 % \begin{environment}{cpruleset}
-% A wrapper environment in which |cprules| are listed, and which mimics the usual style of presentation for rules:  A lined box with the rules inside it.
+% A wrapper environment in which |cprule|s are listed, and which mimics the usual style of presentation for rules:  A lined box with the rules inside it.
 %    \begin{macrocode}
 \newenvironment{cpruleset}
 	{\begin{framed}\begin{adjustwidth}{-1.0em}{-1.0em}
@@ -844,7 +848,7 @@
 % \begin{macro}{\cpset}
 % Used for presenting a list of objects that are meant to be in the same set.  Currently doesn't get used much, might be removed in the future.
 %    \begin{macrocode}
-\newcommand*{\cpset}[1]{\cpsystems@perfuncurlies{#1}}
+\newcommand*{\cpset}[1]{\cpsystems@perfuncurly{#1}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -867,7 +871,7 @@
 % Currently the only difference between this and the |cpfunc| command is the nature of the brackets used -- regular |cpfunc|s use parentheses, while micro-surgery functors use curly braces.  Both (but especially the latter) are potentially subject to change in the future.  Thus, one of the reasons why it is recommended to use these commands is that it will be much easier to change all your micro-surgery functors in future if the style changes.  Another reason is that these play nicely with the regular |cpfunc|s to give you automatically growing brackets.
 %    \begin{macrocode}
 \newcommand*{\cpfuncms}[2]{
-	\trim@spaces@noexp{#1\cpsystems@perfuncurlies{#2}}
+	\trim@spaces@noexp{#1\cpsystems@perfuncurly{#2}}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -887,7 +891,7 @@
 % The first argument is the symbol for the functor itself, the second argument is the objects contained inside the first part of the term, and the third argument the bit contained inside the last term, which is the micro-surgical part.
 %    \begin{macrocode}
 \newcommand*{\cpfuncnms}[3]{
-	\cpfunc{#1}{#2}\cpsystems@perfuncurlies{#3}
+	\cpfunc{#1}{#2}\cpsystems@perfuncurly{#3}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -907,29 +911,29 @@
 % The first argument is the symbol for the functor itself, the second argument is the objects contained inside the first part of the term, the third argument the bit contained inside next part, and the fourth the bit contained in the last part of the term, which is the micro-surgical part.
 %    \begin{macrocode}
 \newcommand*{\cpfuncnnms}[4]{
-	\cpfuncn{#1}{#2}{#3}\cpsystems@perfuncurlies{#4}
+	\cpfuncn{#1}{#2}{#3}\cpsystems@perfuncurly{#4}
 }
 %    \end{macrocode}
 % \end{macro}
 % 
-% \begin{macro}{\cpterm}
+% \begin{macro}{\cptermdef}
 % Used when writing a listing describing the cP systems terms used in a given text (which is envisaged to be something that occurs immediately after stating the ruleset).  The general suggestion is to use these inside a |description| environment, which tends to leave the whole thing quite nicely set out.  The end result is the symbols in math mode, and then their descriptions next to them.
 %    \begin{macrocode}
-\newcommand*{\cpterm}[2]{
+\newcommand*{\cptermdef}[2]{
 	\item[$#1$]#2
 }
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\cpundig}
-% A parameter-less convenience macro for inserting the correctly-formatted cP~systems `unitary digit' in rules.
+% A parameter-less convenience macro for inserting the correctly-formatted cP~systems `unary digit' in rules.
 %    \begin{macrocode}
 \newcommand*{\cpundig}{\mathit{1}}
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\cpempty}
-% A parameter-less convenience macro for inserting the correctly-formatted empty functor symbol (which is actually just a |\lambda|).  Mostly used so that intent is clear in the rules specifications, but also partly in case someone ends up changing how empty functors are specified.
+% A parameter-less convenience macro for inserting the correctly-formatted empty functor symbol (which, currently, is actually just a |\lambda|).  Mostly used so that intent is clear in the rules specifications, but also partly in case someone ends up changing how empty functors are specified.
 %    \begin{macrocode}
 \newcommand*{\cpempty}{\lambda}
 %    \end{macrocode}
@@ -941,19 +945,33 @@
 \newcommand*{\cpdiscard}{\_}
 %    \end{macrocode}
 % \end{macro}
-% 
+%
+%
+% \subsection{Interactions with other packages}
+% \begin{macro}{Cleveref and floats}
+% The below snippet checks if the |\crefname| command (which is assumed to be from cleveref) is defined.  If the command is defined, then it is used to provide the necessary information for cleveref to do proper cross-references to the |cprulesetfloat| and |cpobjectsfloat| environments.
+%    \begin{macrocode}
+\AfterPreamble{
+    \ifdef{\crefname}
+        {\crefname{cprulesetfloat}{ruleset}{rulesets}
+        \crefname{cpobjectsfloat}{objects group}{objects groups}}
+    {}
+}
+%    \end{macrocode}
+% \end{macro}
 %
 % 
 % \subsection{Internal}
 % Macros that are only intended to be used inside the package, and probably shouldn't be used outside of it.  Much as if the previous macros are all the public interface of the package, while these ones are the private implementation details.
 %
-%
 % \subsubsection{Counters}
+% \begin{macro}{Package-specific counters}
 % A couple of counters used for tracking rules numbers.
 %    \begin{macrocode}
-	\newcounter{cpsystems@RuleNum}[cprulesetfloat]
-	\newcounter{cpsystems@RuleNumAlt}
+\newcounter{cpsystems@RuleNum}[cprulesetfloat]
+\newcounter{cpsystems@RuleNumAlt}
 %    \end{macrocode}
+% \end{macro}
 % 
 % \begin{macro}{\cpsystems@basecprule}
 % For writing out rules inside a |cpruleset| environment.
@@ -978,7 +996,7 @@
 % Base rule which both |\cpsend| and |\cprecv| make use of.  This is a ``single source of truth'', and means only one place needs to be changed to change the brackets which encapsulate messages.
 %    \begin{macrocode}
 \newcommand{\cpsystems@basecpsendrecv}[3]{
-    \trim@spaces@noexp{\cpsystems@perfuncurlies{#1}{#3}_{#2}}
+    \trim@spaces@noexp{\cpsystems@perfuncurly{#1}{#3}_{#2}}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -992,10 +1010,10 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\cpsystems@perfuncurlies}
+% \begin{macro}{\cpsystems@perfuncurly}
 % Convencience rule used to provide the wrapping of other things in auto-growing curly braces.  Introduced because I found I was starting to copy-paste the raw command frequently.
 %    \begin{macrocode}
-\newcommand{\cpsystems@perfuncurlies}[1]{
+\newcommand{\cpsystems@perfuncurly}[1]{
     \trim@spaces@noexp{\perfectunary{IncreaseHeight}{\{}{\}}{#1}}
 }
 %    \end{macrocode}
@@ -1006,13 +1024,12 @@
 % \begin{itemize}
 % \item A command to create line breaks in |cpruleset| environments, without requiring the user to fill in all the \&s required by the contained |array| environment to make it work.
 % \item Restoring support for line breaks inside |cpfunc| commands -- it seems to be unavoidable at times, but doesn't play nicely with the resizing brackets.
-% \item Change to a different, more modern way of declaring |cpruleset| environments that doesn't rely on the |array| environment.  There's nothing wrong with |array|, but it's probably more low-level that I actually need, and doesn't come with some conveniences (I imagine).
-% \item A way to use cross-references to refer to rule numbers in the rulesets.
+% \item Change to a different, more modern way of declaring |cpruleset| environments that doesn't rely on the |array| environment.  There's nothing wrong with |array|, but it's probably more low-level than I actually need, and doesn't come with some conveniences (I imagine).
 % \item The ability to specify optional parameters to the |cpruleset| stating the desired amount of arraystretch and adjustwidth  to use.  Currently they are hard-coded as \texttt{1.1em} \texttt{-1.0em}, respectively.
 % \item Provide the ability to specify a printed name for |cprulesetfloat| and |cpobjectsfloat| besides `Ruleset' and `Objects Group'.
 % \item Make the package available via CTAN.
 % \item Eliminate the extraneous symbols in the index (it is unclear why they are appearing, when they have been specifically excluded using the normal method for \texttt{.dtx} files).
-% \item Change the implementation of the package to using \LaTeX{}3's approach.
+% \item Change the implementation of the package to using \LaTeX{} 3.
 % \item Versions of |cpruleset| and |cpobjects| that \emph{don't} draw boxes around themselves.  Perhaps, e.g. |cpruleset*|.
 % \item A way to break up one ruleset or objects group into multiple boxes and/or across multiple pages, cleanly.  Though, to be honest, if this is becoming an issue for a ruleset, it probably means that the ruleset has grown large enough that it could be logically split into subsets.  Objects groups may be a different story.
 % \item Seek to integrate this package into David Orellana Martín's `membranecomputing' package (\url{https://ctan.org/pkg/membranecomputing}).
