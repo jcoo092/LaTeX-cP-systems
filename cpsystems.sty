@@ -20,7 +20,7 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[2011/06/27]
 \ProvidesPackage{cpsystems}
-[2021/08/15 v0.20 Package to aid in typesetting cP systems
+[2021/08/19 v0.21 Package to aid in typesetting cP systems
 rulesets, following Nicolescu's standard style]
 \RequirePackage{amsmath}
 \RequirePackage{array}
@@ -51,7 +51,7 @@ placement={htbp},]
 {\end{array}\]\end{adjustwidth}\end{framed}
 \setcounter{cpsystems@RuleNumAlt}{\value{cpsystems@RuleNum}}}
 \newenvironment{cpobjects}{\begin{framed}}{\end{framed}}
-\newcommand*{\cptuple}[7]{
+\newcommand{\cptuple}[7]{
     \[
         \cpfunc{\Pi_{#1}}{#2, #3, #4, #5, #6, #7}
     \]
@@ -59,19 +59,24 @@ placement={htbp},]
 \newcommand*{\cptupletemplate}{
     \cptuple{cP}{T}{A}{O}{R}{S}{\Bar{s}}
 }
-\newcommand{\cprule}[6][]{
+\newcommand*{\cprule}{%
+             \@ifstar
+                  \cpruleStar%
+                  \cpruleNoStar%
+              }
+\newcommand{\cpruleNoStar}[6][]{
     \refstepcounter{cpsystems@RuleNum}
     \notblank{#1}{\zref@label{#1}}{}
     \cpsystems@basecprule{#2}{#3}{#4}{#5}{#6}
 {\hspace{1.5em}(\thecpsystems@RuleNum)}
 }
+\newcommand{\cpruleStar}[5]{
+\cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{}
+}
 \newcommand{\cpruleinline}[1]{
 \[\begin{array}{lllllr}#1\end{array}\]
 }
-\newcommand*{\cprulenonum}[5]{
-\cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{}
-}
-\newcommand*{\cprulecustnum}[6]{
+\newcommand{\cprulecustnum}[6]{
 \cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{(#6)}
 }
 \newcommand*{\cppromoter}[1]{
@@ -80,16 +85,16 @@ placement={htbp},]
 \newcommand*{\cpinhibitor}[1]{
 \cpsystems@cpprominhi{\neg}{#1}
 }
-\newcommand*{\cpsend}[2]{
+\newcommand{\cpsend}[2]{
     \cpsystems@basecpsendrecv{#1}{#2}{!}
 }
-\newcommand*{\cprecv}[2]{
+\newcommand{\cprecv}[2]{
     \cpsystems@basecpsendrecv{#1}{#2}{?}
 }
-\newcommand*{\cpantisend}[2]{
+\newcommand{\cpantisend}[2]{
     \cpsystems@basecpsendrecv{#1}{#2}{!!}
 }
-\newcommand*{\cpantirecv}[2]{
+\newcommand{\cpantirecv}[2]{
     \cpsystems@basecpsendrecv{#1}{#2}{??}
 }
 \newcommand*{\cpchangerulenumber}[1]{
@@ -101,8 +106,14 @@ placement={htbp},]
 }
 \newcommand*{\cponce}{{\scriptstyle 1}}
 \newcommand*{\cpmaxpar}{{\scriptstyle +}}
-\newcommand{\ruleref}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{rule \zref{#1}}}
-\newcommand{\rulerefalt}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{\zref{#1}}}
+\newcommand*{\cpruleref}{%
+             \@ifstar
+                  \cprulerefStar%
+                  \cprulerefNoStar%
+              }
+\newcommand*{\cprulerefNoStar}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{rule \zref{#1}}}
+\newcommand*{\cprulerefStar}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{\zref{#1}}}
+\newcommand*{\cpRuleref}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{Rule \zref{#1}}}
 \newcommand{\cpobjectsline}[1]{
 \[#1\]
 }
@@ -148,13 +159,16 @@ placement={htbp},]
     & & & & ~ \hspace{1em} ~ #1 ~ #2 & \\
 }
 \newcommand{\cpsystems@basecpsendrecv}[3]{
-    \cpsystems@perfuncurly{#1}{#3}_{#2}
+    \cpsystems@perfunangles{#1}{#3}_{#2}
 }
 \newcommand{\cpsystems@perfunparens}[1]{
     \perfectunary{IncreaseHeight}{(}{)}{#1}
 }
 \newcommand{\cpsystems@perfuncurly}[1]{
     \perfectunary{IncreaseHeight}{\{}{\}}{#1}
+}
+\newcommand{\cpsystems@perfunangles}[1]{
+    \perfectunary{IncreaseHeight}{\langle}{\rangle}{#1}
 }
 \endinput
 %%

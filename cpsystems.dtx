@@ -43,13 +43,13 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[2011/06/27]
 %<package>\ProvidesPackage{cpsystems}
 %<*package>
-[2021/08/15 v0.20 Package to aid in typesetting cP systems 
+[2021/08/19 v0.21 Package to aid in typesetting cP systems 
 	rulesets, following Nicolescu's standard style]
 %</package>
 %
 %<*driver>
 \documentclass{ltxdoc}
-\usepackage{cpsystems}[2021/08/15 v0.20]
+\usepackage{cpsystems}[2021/08/19 v0.21]
 \usepackage{fancyvrb}
 \usepackage[hidelinks]{hyperref}
 \EnableCrossrefs
@@ -64,7 +64,8 @@
 %</driver>
 % \fi
 %
-% \changes{0.20}{2021/08/15}{Introduce the \texttt{ruleref} and \texttt{rulerefalt} commands.  This (sadly) means that, at present, you \emph{cannot} adjust a rule's spacing between the RHS and the rule number.  Rename \texttt{cpterm} to \texttt{cptermdefdef} to reflect the fact that it used to provide the definition of a cP systems term, and not somehow declare one or anything.  Add in some setup stuff so that this package's floating environments work with basic usage of the cleveref package.}
+% \changes{0.21}{2021/08/19}{Change the bracket type for inter-top-level-cell communication from curly braces to angle brackets.  Add starred and capitalised variants of the \texttt{ruleref} macro --- the former replaces \texttt{rulerefalt}.  Rename it to \texttt{cpruleref} for consistency purposes.  Convert \texttt{cprulenonum} to \texttt{cprule*}.}
+% \changes{0.20}{2021/08/15}{Introduce the \texttt{ruleref} and \texttt{rulerefalt} commands.  This (sadly) means that, at present, you \emph{cannot} adjust a rule's spacing between the RHS and the rule number.  Rename \texttt{cpterm} to \texttt{cptermdef} to reflect the fact that it used to provide the definition of a cP systems term, and not somehow declare one or anything.  Add in some setup stuff so that this package's floating environments work with basic usage of the cleveref package.}
 % \changes{0.19}{2021/08/11}{Most importantly, changed the default behaviour of rules numbers --- now, they no longer continue on from one ruleset to the next by default.  Instead, they reset at each new \texttt{cprulesetfloat}.  Added commands for the \texttt{cpfuncn} and \texttt{cpfuncnms} stuff.  Modified the \texttt{cprule} definition to permit the optional width adjustment.  Introduced the (basically untested) \texttt{cprulsetcontnum} environment, and the \texttt{cpdiscard} command.  Also added in the internal \texttt{perfunXXX} macros to tidy up the definitions of other macros.}
 % \changes{0.18}{2021/07/14}{Added in \texttt{cprulecustnum}, \texttt{cpantirecv}, \texttt{cpantisend}, \texttt{cptuple}, \texttt{cptupetemplate}, \texttt{cponce}, \texttt{cpmaxpar}, \texttt{cpset}.  Adjusted the arraystretch for rules slightly (from 1.0 to 1.1).   Prefixed \texttt{changerulenumber} and \texttt{resetrulenumber} with \texttt{cp}.  }
 % \changes{0.17}{2021/03/17}{Remove the ending dot from \texttt{cpterm}.  Adjust \texttt{cpsend} and \texttt{cprecv} to use a single internal base rule.  Removed the \texttt{cps} command, to avoid potential conflicts with other packages.  I have found defining cP systems as a glossary term to be a superior alternative anyway.  Changed \texttt{cpresetrulenumber} to make use of \texttt{cpchangerulenumber}, instead of replicating the functionality.}
@@ -80,7 +81,7 @@
 %
 % \DoNotIndex{\arabic, \arraystretch, \begin, \big, \DeclareFloatingEnvironment, \end, \hspace, \item, \NeedsTeXFormat, \neg, \newcommand, \newcounter, \setcounter,
 %	\newenvironment, \ProvidesPackage, \refstepcounter, \renewcommand, \RequirePackage, \rightarrow, \mathit, \lambda, \perfectunary, \Pi, \scriptstyle,
-%	\value, \Bar}
+%	\value, \Bar, \@ifstar, \AfterPreamble, \crefname, \ifdef, \langle, \notblank, \rangle, \zref, \zref@addprop, \zref@extract, \zref@label, \zref@newprop}
 %
 % \providecommand*{\url}{\texttt}
 % \GetFileInfo{cpsystems.dtx}
@@ -150,14 +151,14 @@
 %
 % \noindent
 % \DescribeMacro{\cpruleinline}
-% |\cprule| \marg{Contained |cprulenonum|}
+% |\cprule| \marg{Contained |cprule*|}
 % 
-% Substitute for the |cpruleset| environment when the full environment is unwanted, and instead one simply wishes to include a single rule in the normal text.  This macro takes a single input, a |cprulenonum| macro, which specifies the actual rule to be typeset.  Despite its name, this macro still sets the rule out in its own mini-paragraph because it uses the standalone mathematics delimiters internally.
+% Substitute for the |cpruleset| environment when the full environment is unwanted, and instead one simply wishes to include a single rule in the normal text.  This macro takes a single input, a |cprule*| macro, which specifies the actual rule to be typeset.  Despite its name, this macro still sets the rule out in its own mini-paragraph because it uses the standalone mathematics delimiters internally.
 % 
-% E.g. a rule to move a single \(a\) out of a \(b\) functor might be written inline in the text like:\\ \Verb+\cpruleinline{\cprulenonum{s_1}{b(aa)}{1}{s_1}{b(a)~a}}+ 
+% E.g. a rule to move a single \(a\) out of a \(b\) functor might be written inline in the text like:\\ \Verb+\cpruleinline{\cprule*{s_1}{b(aa)}{1}{s_1}{b(a)~a}}+ 
 % 
 % \noindent
-% \DescribeMacro{\cprulenonum}
+% \DescribeMacro{\cprule*}
 % |\cprule| \marg{Starting state} \marg{Input objects} \marg{Mode of operation} \marg{Ending state} \marg{Output objects}
 % 
 % Goes inside a |cpruleset| environment.  Identical to a |\cprule|, except that this version neither shows a rule number, nor increments the rule counter.
@@ -422,7 +423,7 @@
 % \end{cprulesetfloat}
 %
 % \subsubsection{Rules cross-references}
-% If you were paying close attention, you probably would have noticed the optional parameters to some rules in the previous two rulesets.  Something along the lines of |[rule:1]|.  These optional arguments are used to give labels to rules in rulesets, if desired --- a label is only generated if the optional argument is used (and is non-empty).  To use them, you need to use the custom |\ruleref| command, with the label name, e.g. |\ruleref{rule:2}| produces the text ``\ruleref{rule:2}''.  Currently, there's nothing more to it than that.  You could also use |\rulerefalt{rule:2}| to get ``\rulerefalt{rule:2}'', i.e., the number but not the word rule.
+% If you were paying close attention, you probably would have noticed the optional parameters to some rules in the previous two rulesets.  Something along the lines of |[rule:1]|.  These optional arguments are used to give labels to rules in rulesets, if desired --- a label is only generated if the optional argument is used (and is non-empty).  To use them, you need to use the custom |\cpruleref| command, with the label name, e.g. |\cpruleref{rule:2}| produces the text ``\cpruleref{rule:2}''.  Currently, there's nothing more to it than that.  You could also use |\cpruleref*{rule:2}| to get ``\cpruleref*{rule:2}'', i.e., the number but not the word rule.
 % 
 % \newpage This page has been left blank intentionally (excepting any floats that may end up here).  You'll see why in a moment.  \newpage \vspace*{0.1\textheight}
 % 
@@ -481,16 +482,16 @@
 % This has been carefully constructed to reveal another problem with this approach.  Without the floating environment, the ruleset is printed essentially exactly where it was declared, with the box of the |cpruleset| mostly printing on one page, but breaking and starting again on the next, but the text contained inside the environment is shifted down, overflowing the normal bottom margin for the main text.  I.e. the two become out-of-sync.  In this instance, whitespace was played around with to ensure this would happen (which is why an earlier page was left blank intentionally), but it happened by chance in an earlier draft of this documentation.
 % 
 % \subsubsection{An inline cprule}
-% The |cpruleinline| macro is included to typeset a rule inside the main text without needing to create a full cpruleset environment.  The macro takes one parameter, a |cprulenonum| macro (you could probably use a regular |cprule| macro, but I'm not sure what will happen, except that the rule will probably get a number you could do without).  E.g.
+% The |cpruleinline| macro is included to typeset a rule inside the main text without needing to create a full cpruleset environment.  The macro takes one parameter, a |cprule*| macro (you could probably use a regular |cprule| macro, but I'm not sure what will happen, except that the rule will probably get a number you could do without).  E.g.
 % 
 % % \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce an inline rule,tabsize=2]
 % This is some text before the inline 
-% rule \cpruleinline{\cprulenonum{s_i}{LHS}{+/1}{RHS}{s_j}} and 
+% rule \cpruleinline{\cprule*{s_i}{LHS}{+/1}{RHS}{s_j}} and 
 % this is some text after it.
 % \end{Verbatim}
 %
 % This is some text before the inline 
-% rule \cpruleinline{\cprulenonum{s_i}{LHS}{+/1}{RHS}{s_j}} and 
+% rule \cpruleinline{\cprule*{s_i}{LHS}{+/1}{RHS}{s_j}} and 
 % this is some text after it.
 %
 % 
@@ -670,7 +671,7 @@
 % \begin{macro}{\cptuple}
 % A convenience for stating the definition of a cP~system.  The first parameter is the subscript to \(\Pi\), while the next six are T, A, O, R, S, and \(\Bar{s}\).
 %    \begin{macrocode}
-\newcommand*{\cptuple}[7]{
+\newcommand{\cptuple}[7]{
     \[
         \cpfunc{\Pi_{#1}}{#2, #3, #4, #5, #6, #7}
     \]
@@ -689,13 +690,24 @@
 %
 % 
 % \subsubsection{Rules}
-% 
+%
 % \begin{macro}{\cprule}
+%The base ``selector'' macro for choosing between the starred and unstarred |\cprule| variants.
+%    \begin{macrocode}
+\newcommand*{\cprule}{%
+             \@ifstar
+                  \cpruleStar%
+                  \cpruleNoStar%
+              }
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\cpruleNoStar}
 % For writing out a rule inside a |cpruleset| environment, as well as displaying and incrementing the rule number.
 % Required arguments are, in order, beginning state name; LHS of rule; the label to be applied to the arrow; the ending state name; the RHS of the rule.
-% Also can take an optional argument, specifying the measurement of hspace to put in between the RHS and rule number.
+% This takes an optional argument, the label which you want to give this particular rule for cross-referencing purposes.  No label is set if you do not provide the optional argument.
 %    \begin{macrocode}
-\newcommand{\cprule}[6][]{
+\newcommand{\cpruleNoStar}[6][]{
     \refstepcounter{cpsystems@RuleNum}
     \notblank{#1}{\zref@label{#1}}{}
     \cpsystems@basecprule{#2}{#3}{#4}{#5}{#6}
@@ -703,9 +715,18 @@
 }
 %    \end{macrocode}
 % \end{macro}
+%
+% \begin{macro}{\cpruleStar}
+% 	Same as with a regular |\cpruleNoStar|, but does not show or increment the rule counter.  Nor can you give these rules a label (since they don't have any numbers to refer back to).
+%    \begin{macrocode}
+\newcommand{\cpruleStar}[5]{
+	\cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{}
+}
+%    \end{macrocode}
+% \end{macro}
 % 
 % \begin{macro}{\cpruleinline}
-% For writing out a single rule inside the text, without creating a cpruleset environment.  It still places the rule in its own little paragraph, because it uses the standalone maths environment internally.  Takes a single parameter, a |cprulenonum|.
+% For writing out a single rule inside the text, without creating a cpruleset environment.  It still places the rule in its own little paragraph, because it uses the standalone maths environment internally.  Takes a single parameter, a |cprule*|.
 %    \begin{macrocode}
 \newcommand{\cpruleinline}[1]{
 	\[\begin{array}{lllllr}#1\end{array}\]
@@ -713,19 +734,10 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\cprulenonum}
-% 	Same as with a regular |\cprule|, but does not show or increment the rule counter.
-%    \begin{macrocode}
-\newcommand*{\cprulenonum}[5]{
-	\cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{}
-}
-%    \end{macrocode}
-% \end{macro}
-%
 % \begin{macro}{\cprulecustnum}
-% 	Mostly the same as a regular |\cprule|, but takes the rule number to display as an extra parameter.  This also does \emph{not} increment the rule counter.  I'm yet to work out how you could make references to these rule numbers.  This is currently basically just a quick hack to permit the display of alternatives of pre-existing rules, and right now everything must be updated manually.
+% 	Mostly the same as a regular |\cprule|, but takes the rule number to display as an extra parameter.  This also does \emph{not} increment the rule counter.  I'm yet to work out how you could make references to these rule numbers.  This is currently basically just a quick hack to permit the display of alternatives of pre-existing rules, and right now everything must be updated manually.  If you are displaying an alternative to a pre-existing rule, you could \emph{probably} use |\cpruleref*| plus the extra bit to make things work better.  E.g. if you want to have rules 3a and 3b, you could do |\cprulecustnum{....}{\cpruleref*{otherrule}a}|.
 %    \begin{macrocode}
-\newcommand*{\cprulecustnum}[6]{
+\newcommand{\cprulecustnum}[6]{
 	\cpsystems@basecprule{#1}{#2}{#3}{#4}{#5}{(#6)}
 }
 %    \end{macrocode}
@@ -756,7 +768,7 @@
 % Encapsulate a `send' in cP~systems.
 % First argument is the object(s) to be sent, and the second argument is the name of the channel the object(s) shall be sent on.
 %    \begin{macrocode}
-\newcommand*{\cpsend}[2]{
+\newcommand{\cpsend}[2]{
     \cpsystems@basecpsendrecv{#1}{#2}{!}
 }
 %    \end{macrocode}
@@ -767,7 +779,7 @@
 % Encapsulate a `receive' in cP~systems.
 % First argument is the object(s) to be received, and the second argument is the name of the channel the object(s) shall be received on.
 %    \begin{macrocode}
-\newcommand*{\cprecv}[2]{
+\newcommand{\cprecv}[2]{
     \cpsystems@basecpsendrecv{#1}{#2}{?}
 }
 %    \end{macrocode}
@@ -777,7 +789,7 @@
 % Encapsulate an antiport `send' in cP~systems.
 % First argument is the object(s) to be sent, and the second argument is the name of the channel the object(s) shall be sent on.
 %    \begin{macrocode}
-\newcommand*{\cpantisend}[2]{
+\newcommand{\cpantisend}[2]{
     \cpsystems@basecpsendrecv{#1}{#2}{!!}
 }
 %    \end{macrocode}
@@ -788,7 +800,7 @@
 % Encapsulate an antiport `receive' in cP~systems.
 % First argument is the object(s) to be received, and the second argument is the name of the channel the object(s) shall be received on.
 %    \begin{macrocode}
-\newcommand*{\cpantirecv}[2]{
+\newcommand{\cpantirecv}[2]{
     \cpsystems@basecpsendrecv{#1}{#2}{??}
 }
 %    \end{macrocode}
@@ -832,17 +844,36 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\ruleref}
-% The below is used to enable cross-referencing for rules numbers.  It was adapated from this TeX.StackExchange answer: \url{https://tex.stackexchange.com/a/610616/113430}.  Many thanks to Ulrike Fischer for it.  At current, I am using a basic implementation which does \emph{not} have any hyperlinking capabilities or anything.  I want to figure out how this all works a bit more before I get into anything fancy --- and I don't want to introduce a dependency of hyperref just yet.
+%
+% \begin{macro}{\cpruleref}
+%The base ``selector'' macro for choosing between the starred and unstarred |\cpruleref| variants.
 %    \begin{macrocode}
-\newcommand{\ruleref}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{rule \zref{#1}}}
+\newcommand*{\cpruleref}{%
+             \@ifstar
+                  \cprulerefStar%
+                  \cprulerefNoStar%
+              }
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\rulerefalt}
-% Much the same as |\ruleref|, but \emph{doesn't} include the word ``rule''.  I called it |\rulerefalt| because I seemed to be having some sort of issue with getting everything to work calling it |\ruleref*|.
+% \begin{macro}{\cprulerefNoStar}
+% The below is used to enable cross-referencing for rules numbers.  It was adapated from this TeX.StackExchange answer: \url{https://tex.stackexchange.com/a/610616/113430}.  Many thanks to Ulrike Fischer for it.  At current, I am using a basic implementation which does \emph{not} have any hyperlinking capabilities or anything.  I want to figure out how this all works a bit more before I get into anything fancy --- and I don't want to introduce a dependency of hyperref just yet.
 %    \begin{macrocode}
-\newcommand{\rulerefalt}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{\zref{#1}}}
+\newcommand*{\cprulerefNoStar}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{rule \zref{#1}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\cprulerefStar}
+% Much the same as |\cprulerefNoStar|, but \emph{doesn't} include the word ``rule''.
+%    \begin{macrocode}
+\newcommand*{\cprulerefStar}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{\zref{#1}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\cpRuleref}
+% Identical to |\cprulerefNoStar|, except that the word ``rule'' is capitalised.  There is no starred version of this one, because that would end up identical in effect to |\cpruleref*|.
+%    \begin{macrocode}
+\newcommand*{\cpRuleref}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{Rule \zref{#1}}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -989,7 +1020,7 @@
 % \end{macro}
 %
 % \subsubsection{Internal commands for cross-referencing of rules numbers}
-% \begin{macro}{\ruleref}
+% \begin{macro}{Rule references internal defs}
 % The below is used to enable cross-referencing for rules numbers.  It was adapated from this TeX.StackExchange answer: \url{https://tex.stackexchange.com/a/610616/113430}.  Many thanks to Ulrike Fischer for it.  At current, I am using a basic implementation which does \emph{not} have any hyperlinking capabilities or anything.  I want to figure out how this all works a bit more before I get into anything fancy --- and I don't want to introduce a dependency of hyperref just yet.
 %    \begin{macrocode}
 \zref@newprop{cpsystems@ruleslabel}[Doc-Start]{}
@@ -1021,7 +1052,7 @@
 % Base rule which both |\cpsend| and |\cprecv| make use of.  This is a ``single source of truth'', and means only one place needs to be changed to change the brackets which encapsulate messages.
 %    \begin{macrocode}
 \newcommand{\cpsystems@basecpsendrecv}[3]{
-    \cpsystems@perfuncurly{#1}{#3}_{#2}
+    \cpsystems@perfunangles{#1}{#3}_{#2}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -1044,13 +1075,22 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\cpsystems@perfunangles}
+% Convenience rule used to provide the wrapping of other things in auto-growing curly braces.  Introduced because I found I was starting to copy-paste the raw command frequently.
+%    \begin{macrocode}
+\newcommand{\cpsystems@perfunangles}[1]{
+    \perfectunary{IncreaseHeight}{\langle}{\rangle}{#1}
+}
+%    \end{macrocode}
+% \end{macro}
+%
 % \section{Possible improvements}
 % A handful of possible improvements have been thought of already, though in most cases it is entirely unclear how to achieve them at this point.  They include:
 % \begin{itemize}
 % \item A command to create line breaks in |cpruleset| environments, without requiring the user to fill in all the \&s required by the contained |array| environment to make it work.
 % \item Restoring support for line breaks inside |cpfunc| commands -- it seems to be unavoidable at times, but doesn't play nicely with the resizing brackets.
 % \item Change to a different, more modern way of declaring |cpruleset| environments that doesn't rely on the |array| environment.  There's nothing wrong with |array|, but it's probably more low-level than I actually need, and doesn't come with some conveniences (I imagine).
-% \item The ability to specify optional parameters to the |cpruleset| stating the desired amount of arraystretch and adjustwidth  to use.  Currently they are hard-coded as \texttt{1.1em} \texttt{-1.0em}, respectively.
+% \item The ability to specify optional parameters to the |cpruleset| stating the desired amount of arraystretch and adjustwidth  to use.  Currently they are hard-coded as \texttt{1.1em} and \texttt{-1.0em}, respectively.
 % \item Provide the ability to specify a printed name for |cprulesetfloat| and |cpobjectsfloat| besides `Ruleset' and `Objects Group'.
 % \item Make the package available via CTAN.
 % \item Eliminate the extraneous symbols in the index (it is unclear why they are appearing, when they have been specifically excluded using the normal method for \texttt{.dtx} files).
