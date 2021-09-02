@@ -20,7 +20,7 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[2011/06/27]
 \ProvidesPackage{cpsystems}
-[2021/08/19 v0.21 Package to aid in typesetting cP systems
+[2021/09/02 v0.22 Package to aid in typesetting cP systems
 rulesets, following Nicolescu's standard style]
 \RequirePackage{amsmath}
 \RequirePackage{array}
@@ -111,9 +111,9 @@ placement={htbp},]
                   \cprulerefStar%
                   \cprulerefNoStar%
               }
-\newcommand*{\cprulerefNoStar}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{rule \zref{#1}}}
-\newcommand*{\cprulerefStar}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{\zref{#1}}}
-\newcommand*{\cpRuleref}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{Rule \zref{#1}}}
+\newcommand*{\cprulerefNoStar}[1]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{rule \zref{#1}}}
+\newcommand*{\cprulerefStar}[1]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{\zref{#1}}}
+\newcommand*{\cpRuleref}[1]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{Rule \zref{#1}}}
 \newcommand{\cpobjectsline}[1]{
 \[#1\]
 }
@@ -150,7 +150,7 @@ placement={htbp},]
 }
 \newcounter{cpsystems@RuleNum}[cprulesetfloat]
 \newcounter{cpsystems@RuleNumAlt}
-\zref@newprop{cpsystems@ruleslabel}[Doc-Start]{}
+\zref@newprop{cpsystems@ruleslabel}[Doc-Start]{\@currentHref}
 \zref@addprop{main}{cpsystems@ruleslabel}
 \newcommand{\cpsystems@basecprule}[6]{
     #1 & #2 & \rightarrow_{#3} & #4 & #5 & #6\\

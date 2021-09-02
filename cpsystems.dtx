@@ -43,14 +43,15 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[2011/06/27]
 %<package>\ProvidesPackage{cpsystems}
 %<*package>
-[2021/08/19 v0.21 Package to aid in typesetting cP systems 
+[2021/09/02 v0.22 Package to aid in typesetting cP systems 
 	rulesets, following Nicolescu's standard style]
 %</package>
 %
 %<*driver>
 \documentclass{ltxdoc}
-\usepackage{cpsystems}[2021/08/19 v0.21]
+\usepackage{cpsystems}[2022/09/02 v0.22]
 \usepackage{fancyvrb}
+\usepackage[abbreviations]{foreign}
 \usepackage[hidelinks]{hyperref}
 \EnableCrossrefs
 \CodelineIndex
@@ -64,6 +65,7 @@
 %</driver>
 % \fi
 %
+% \changes{0.22}{2021/09/02}{Update the rules references commands so that they also do hyperlinking, following the example from Ulrike Fischer on TeX.StackExchange.  Also, redid much of the example rulesets and objects groups so that everything is now properly encapsulated inside \texttt{cpfunc} commands.}
 % \changes{0.21}{2021/08/19}{Change the bracket type for inter-top-level-cell communication from curly braces to angle brackets.  Add starred and capitalised variants of the \texttt{ruleref} macro --- the former replaces \texttt{rulerefalt}.  Rename it to \texttt{cpruleref} for consistency purposes.  Convert \texttt{cprulenonum} to \texttt{cprule*}.}
 % \changes{0.20}{2021/08/15}{Introduce the \texttt{ruleref} and \texttt{rulerefalt} commands.  This (sadly) means that, at present, you \emph{cannot} adjust a rule's spacing between the RHS and the rule number.  Rename \texttt{cpterm} to \texttt{cptermdef} to reflect the fact that it used to provide the definition of a cP systems term, and not somehow declare one or anything.  Add in some setup stuff so that this package's floating environments work with basic usage of the cleveref package.}
 % \changes{0.19}{2021/08/11}{Most importantly, changed the default behaviour of rules numbers --- now, they no longer continue on from one ruleset to the next by default.  Instead, they reset at each new \texttt{cprulesetfloat}.  Added commands for the \texttt{cpfuncn} and \texttt{cpfuncnms} stuff.  Modified the \texttt{cprule} definition to permit the optional width adjustment.  Introduced the (basically untested) \texttt{cprulsetcontnum} environment, and the \texttt{cpdiscard} command.  Also added in the internal \texttt{perfunXXX} macros to tidy up the definitions of other macros.}
@@ -147,7 +149,7 @@
 % 
 % Goes inside a |cpruleset| environment.  This is used to write out individual rules, and takes five mandatory arguments.  They are, in order, the starting state for the rule; the set of objects that are matched on and consumed by the rule; the parallelism mode specifier (currently \(+\) and \(1\) are standard for maximum and minimum parallelism); the ending state for the rule;  the objects that are output at the end of the rule.
 % 
-% E.g. a rule to move a single \(a\) out of a \(b\) functor might be written like:\\ \Verb+\cprule{s_1}{b(aa)}{1}{s_1}{b(a)~a}+ 
+% E.g. a rule to move a single \(a\) out of a \(b\) functor might be written like:\\ \Verb+\cprule{s_1}{b(aa)}{\cponce}{s_1}{b(a)~a}+ 
 %
 % \noindent
 % \DescribeMacro{\cpruleinline}
@@ -155,7 +157,7 @@
 % 
 % Substitute for the |cpruleset| environment when the full environment is unwanted, and instead one simply wishes to include a single rule in the normal text.  This macro takes a single input, a |cprule*| macro, which specifies the actual rule to be typeset.  Despite its name, this macro still sets the rule out in its own mini-paragraph because it uses the standalone mathematics delimiters internally.
 % 
-% E.g. a rule to move a single \(a\) out of a \(b\) functor might be written inline in the text like:\\ \Verb+\cpruleinline{\cprule*{s_1}{b(aa)}{1}{s_1}{b(a)~a}}+ 
+% E.g. a rule to move a single \(a\) out of a \(b\) functor might be written inline in the text like:\\ \Verb+\cpruleinline{\cprule*{s_1}{b(aa)}{\cponce}{s_1}{b(a)~a}}+ 
 % 
 % \noindent
 % \DescribeMacro{\cprule*}
@@ -190,14 +192,14 @@
 % Note, of course, that if an object is sent to the current top-level either using a non-existent channel or a pattern that is not specified by any receiving rule in the system, that object will not be retrieved from the channel by the current top-level cell.
 % 
 % \noindent
-% \DescribeMacro{\changerulenum}
-% |\changerulenum| \marg{The number to which you would like to set the rule counter}
+% \DescribeMacro{\cpchangerulenum}
+% |\cpchangerulenum| \marg{The number to which you would like to set the rule counter}
 % 
 % Set the rules counter to whatever number you prefer.
 % 
 % \noindent
-% \DescribeMacro{\resetrulenum}
-% |\resetrulenum|
+% \DescribeMacro{\cpresetrulenum}
+% |\cpresetrulenum|
 % 
 % Resets the rules counter back to zero, which means that the next time you use a |\cprule|, that rule will receive the number 1.
 %  
@@ -215,7 +217,7 @@
 % \DescribeMacro{\cpfunc}
 % |\cpfunc| \marg{Outer functor} \marg{Contents of functor}
 % 
-% Typically used inside a |cprule|, though so long as it is used inside a maths mode environment of some sort (e.g. \Verb+\(\_\)+ or\Verb+\ensuremath{}+) it should still work.  This command is used to write out a functor and its contents, where the first argument is the name of the containing functor and the second argument is everything that is contained inside the functor.  They can, of course, be nested -- in fact, this is encouraged.  The implementation of |cpfunc| \emph{should} ensure that the brackets will scale appropriately automatically, so that outer functors have larger brackets than inner ones.
+% Typically used inside a |cprule|, though so long as it is used inside a maths mode environment of some sort (\eg{} \Verb+\(\_\)+ or\Verb+\ensuremath{}+) it should still work.  This command is used to write out a functor and its contents, where the first argument is the name of the containing functor and the second argument is everything that is contained inside the functor.  They can, of course, be nested -- in fact, this is encouraged.  The implementation of |cpfunc| \emph{should} ensure that the brackets will scale appropriately automatically, so that outer functors have larger brackets than inner ones.
 %
 % Line breaking is currently, er, broken in this implementation.  It didn't play well with the auto-growing brackets.  |\\| is completely unusable inside a |cpfunc|.  |\linebreak| and |\newline| can be included, but seem to do absolutely nothing.  If you have any |&|s for marking out columns, they seem to cause compilation errors and should be removed.  It is unclear at the moment how to restore this functionality, but this issue is why the examples below all spill well past the right-hand-side of their frames.
 %
@@ -249,24 +251,24 @@
 % \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce \autoref{rules:TSP},tabsize=2]
 % \begin{cprulesetfloat}
 % 	\begin{cpruleset}
-% 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
-% 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
+% 		\cprule{s_1}{\cpfunc{v}{\cpfunc{v}{R}Y}}{\cponce}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Y}~
+% 		\cpfunc{p}{\cpfunc{h}{R}\cpfunc{p}{\,}}}~\cpfunc{c}{\cpempty}}
 % 		
-% 		\cprule{s_2}{\cpfunc{s}{r(R)~u()~\cpfunc{p}{h(F)p(P)}~c(C)}}
-% 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
-% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+% 		\cprule{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\,}~\cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}}~\cpfunc{c}{C}}}
+% 		{\cpmaxpar}{s_3}{\cpfunc{z}{\cpfunc{p}{\cpfunc{h}{R} \cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}}}}~\cpfunc{c}{W}}
+% 		\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %		
-%		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z)~
-%		\cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}~c(CW)}}
-%		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
-%		\cpfunc{p}{h(F) p(P)}~c(C)}}
-%		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		\cprule{s_2}{}{\cpmaxpar}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Z}~
+%		\cpfunc{p}{\cpfunc{h}{T} \cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}}~\cpfunc{c}{CW}}}
+%		\cppromoter{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\cpfunc{v}{T}Z}~
+%		\cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}~\cpfunc{c}{C}}}
+%		\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %		
-%		\cprule{s_2}{s(\_)}{+}{s_2}{}
+%		\cprule{s_2}{s({\cpdiscard})}{\cpmaxpar}{s_2}{}
 %		
-%		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
-%		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
-%		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+%		\cprule{s_3}{}{\cponce}{s_4}{\cpfunc{p'}{P} \quad \cpfunc{c'}{1D}}
+%		\cppromoter{\cpfunc{z}{\cpfunc{p}{P~\cpfunc{c}{1D}}}}
+%		\cpinhibitor{(D = CW)~\cpfunc{z}{p({\cpdiscard})~\cpfunc{c}{C}}}
 % 	
 % 	 \end{cpruleset}
 % 	 \caption{\label{rules:TSP} The five rules from \cite{Cooper2019},
@@ -276,24 +278,24 @@
 % 
 %  \begin{cprulesetfloat}
 % 	\begin{cpruleset}
-% 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
-% 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
+% 		\cprule{s_1}{\cpfunc{v}{\cpfunc{v}{R}Y}}{\cponce}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Y}~
+% 		\cpfunc{p}{\cpfunc{h}{R}\cpfunc{p}{\,}}}~\cpfunc{c}{\cpempty}}
 % 		
-% 		\cprule{s_2}{\cpfunc{s}{r(R)~u()~\cpfunc{p}{h(F)p(P)}~c(C)}}
-% 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
-% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+% 		\cprule{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\,}~\cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}}~\cpfunc{c}{C}}}
+% 		{\cpmaxpar}{s_3}{\cpfunc{z}{\cpfunc{p}{\cpfunc{h}{R} \cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}}}}~\cpfunc{c}{W}}
+% 		\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %		
-%		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z)~
-%		\cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}~c(CW)}}
-%		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
-%		\cpfunc{p}{h(F) p(P)}~c(C)}}
-%		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		\cprule{s_2}{}{\cpmaxpar}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Z}~
+%		\cpfunc{p}{\cpfunc{h}{T} \cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}}~\cpfunc{c}{CW}}}
+%		\cppromoter{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\cpfunc{v}{T}Z}~
+%		\cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}~\cpfunc{c}{C}}}
+%		\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %		
-%		\cprule{s_2}{s(\_)}{+}{s_2}{}
+%		\cprule{s_2}{s({\cpdiscard})}{\cpmaxpar}{s_2}{}
 %		
-%		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
-%		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
-%		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+%		\cprule{s_3}{}{\cponce}{s_4}{\cpfunc{p'}{P} \quad \cpfunc{c'}{1D}}
+%		\cppromoter{\cpfunc{z}{\cpfunc{p}{P~\cpfunc{c}{1D}}}}
+%		\cpinhibitor{(D = CW)~\cpfunc{z}{p({\cpdiscard})~\cpfunc{c}{C}}}
 %
 % 	\end{cpruleset}
 % 	\caption{\label{rules:TSP} The five rules from \cite{Cooper2019},
@@ -302,30 +304,30 @@
 %
 % At the present point in time, the paragraph following this one is a total lie.  It \emph{used} to be the case that everything was re-arranged to make it all fit nicely in the box, but since introducing the auto-growing brackets, this hasn't worked.  For some reason I have yet to work out, |\cpfunc| and similar friends hit a compilation error when there is an attempt at a newline inside them.  Given that by far the longest parts of some rules are one big long |\cpfunc|, this prevents adjusting things properly.  It probably has something to do with the perfectcut package that I use to get the auto-growing brackets, but I haven't figured out the problem yet.
 % 
-% There is, however, an extremely obvious problem with \autoref{rules:TSP} -- much of it extends beyond the box.  That is partly a product of the narrow margins for the main text body of the current document class, but with rules of any real length this is an inevitability really, if the entire thing is set onto a single line.  The solution, therefore, is to split the wider parts over multiple lines, thereby permitting the array to narrow each individual field, and thus fit everything inside the box.  Unfortunately, at present there is no \emph{good} way to do this.  The way to achieve it is simply to include a line break (i.e. \Verb+\\+) and then an appropriate number of ampersands (|&|) to bring the array back into alignment, as demonstrated in \autoref{rules:TSP2}.  It is important (and sometimes slightly tricky) to get the number of ampersands exactly correct.  The wrong number can either lead to errors from the \LaTeX{} compiler and/or part of a rule appearing in a different column to the intended one.
+% There is, however, an extremely obvious problem with \autoref{rules:TSP} -- much of it extends beyond the box.  That is partly a product of the narrow margins for the main text body of the current document class, but with rules of any real length this is an inevitability really, if the entire thing is set onto a single line.  The solution, therefore, is to split the wider parts over multiple lines, thereby permitting the array to narrow each individual field, and thus fit everything inside the box.  Unfortunately, at present there is no \emph{good} way to do this.  The way to achieve it is simply to include a line break (\ie{} \Verb+\\+) and then an appropriate number of ampersands (|&|) to bring the array back into alignment, as demonstrated in \autoref{rules:TSP2}.  It is important (and sometimes slightly tricky) to get the number of ampersands exactly correct.  The wrong number can either lead to errors from the \LaTeX{} compiler and/or part of a rule appearing in a different column to the intended one.
 % 
 % \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce \autoref{rules:TSP2},tabsize=2]
 % \begin{cprulesetfloat}
 % 	\begin{cpruleset}
-% 		\cprule[rule:1]{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
-% 		\cpfunc{p}{h(R)p()}} &\\&&&& c(\lambda)}
+% 		\cprule[rule:1]{s_1}{\cpfunc{v}{\cpfunc{v}{R}Y}}{\cponce}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Y}~
+% 		\cpfunc{p}{\cpfunc{h}{R}\cpfunc{p}{\,}}} &\\&&&& \cpfunc{c}{\cpempty}}
 % 		
-% 		\cprule{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
-% 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
-% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+% 		\cprule{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\,} \newline \cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}} \newline \cpfunc{c}{C}}}
+% 		{\cpmaxpar}{s_3}{\cpfunc{z}{\cpfunc{p}{\cpfunc{h}{R} \cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}}}}~\cpfunc{c}{W}}
+% 		\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %		
-%		\cprule[rule:2]{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
-%		 \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
-%		\newline  c(CW)}}
-%		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
-%		\cpfunc{p}{h(F) p(P)}~c(C)}}
-%		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		\cprule[rule:2]{s_2}{}{\cpmaxpar}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Z} \newline
+%		 \cpfunc{p}{\cpfunc{h}{T} \cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}}
+%		\newline  \cpfunc{c}{CW}}}
+%		\cppromoter{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\cpfunc{v}{T}Z}~
+%		\cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}~\cpfunc{c}{C}}}
+%		\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %		
-%		\cprule{s_2}{s(\_)}{+}{s_2}{}
+%		\cprule{s_2}{s({\cpdiscard})}{\cpmaxpar}{s_2}{}
 %		
-%		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
-%		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
-%		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+%		\cprule{s_3}{}{\cponce}{s_4}{\cpfunc{p'}{P} \quad \cpfunc{c'}{1D}}
+%		\cppromoter{\cpfunc{z}{\cpfunc{p}{P~\cpfunc{c}{1D}}}}
+%		\cpinhibitor{(D = CW)~\cpfunc{z}{p({\cpdiscard})~\cpfunc{c}{C}}}
 % 
 % 	\end{cpruleset}
 % 	\caption{\label{rules:TSP2} The five rules from \cite{Cooper2019},
@@ -336,25 +338,25 @@
 % 
 % \begin{cprulesetfloat}
 % 	\begin{cpruleset}
-% 		\cprule[rule:1]{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
-% 		\cpfunc{p}{h(R)p()}} &\\&&&& c(\lambda)}
+% 		\cprule[rule:1]{s_1}{\cpfunc{v}{\cpfunc{v}{R}Y}}{\cponce}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Y}~
+% 		\cpfunc{p}{\cpfunc{h}{R}\cpfunc{p}{\,}}} &\\&&&& \cpfunc{c}{\cpempty}}
 % 		
-% 		\cprule{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
-% 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
-% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+% 		\cprule{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\,} \newline \cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}} \newline \cpfunc{c}{C}}}
+% 		{\cpmaxpar}{s_3}{\cpfunc{z}{\cpfunc{p}{\cpfunc{h}{R} \cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}}}}~\cpfunc{c}{W}}
+% 		\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %		
-%		\cprule[rule:2]{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
-%		 \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
-%		\newline  c(CW)}}
-%		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
-%		\cpfunc{p}{h(F) p(P)}~c(C)}}
-%		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		\cprule[rule:2]{s_2}{}{\cpmaxpar}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Z} \newline
+%		 \cpfunc{p}{\cpfunc{h}{T} \cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}}
+%		\newline  \cpfunc{c}{CW}}}
+%		\cppromoter{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\cpfunc{v}{T}Z}~
+%		\cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}~\cpfunc{c}{C}}}
+%		\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %		
-%		\cprule{s_2}{s(\_)}{+}{s_2}{}
+%		\cprule{s_2}{s({\cpdiscard})}{\cpmaxpar}{s_2}{}
 %		
-%		\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
-%		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
-%		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+%		\cprule{s_3}{}{\cponce}{s_4}{\cpfunc{p'}{P} \quad \cpfunc{c'}{1D}}
+%		\cppromoter{\cpfunc{z}{\cpfunc{p}{P~\cpfunc{c}{1D}}}}
+%		\cpinhibitor{(D = CW)~\cpfunc{z}{p({\cpdiscard})~\cpfunc{c}{C}}}
 %
 % 	\end{cpruleset}
 % 	\caption{\label{rules:TSP2} The five rules from \cite{Cooper2019},
@@ -367,25 +369,25 @@
 % \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce \autoref{rules:TSP3},tabsize=2]
 % \begin{cprulesetfloat}
 % 	\begin{cprulesetcontnum}
-% 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
-% 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
+% 		\cprule{s_1}{\cpfunc{v}{\cpfunc{v}{R}Y}}{\cponce}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Y}~
+% 		\cpfunc{p}{\cpfunc{h}{R}\cpfunc{p}{\,}}}~\cpfunc{c}{\cpempty}}
 % 		
-% 		\cprule[rule:3]{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
-% 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
-% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+% 		\cprule[rule:3]{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\,} \newline \cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}} \newline \cpfunc{c}{C}}}
+% 		{\cpmaxpar}{s_3}{\cpfunc{z}{\cpfunc{p}{\cpfunc{h}{R} \cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}}}}~\cpfunc{c}{W}}
+% 		\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %		
-%		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
-%		 \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
-%		\newline  c(CW)}}
-%		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
-%		\cpfunc{p}{h(F) p(P)}~c(C)}}
-%		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		\cprule{s_2}{}{\cpmaxpar}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Z} \newline
+%		 \cpfunc{p}{\cpfunc{h}{T} \cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}}
+%		\newline  \cpfunc{c}{CW}}}
+%		\cppromoter{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\cpfunc{v}{T}Z}~
+%		\cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}~\cpfunc{c}{C}}}
+%		\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %		
-%		\cprule{s_2}{s(\_)}{+}{s_2}{}
+%		\cprule{s_2}{s({\cpdiscard})}{\cpmaxpar}{s_2}{}
 %		
-%		\cprule[rule:4]{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
-%		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
-%		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+%		\cprule[rule:4]{s_3}{}{\cponce}{s_4}{\cpfunc{p'}{P} \quad \cpfunc{c'}{1D}}
+%		\cppromoter{\cpfunc{z}{\cpfunc{p}{P~\cpfunc{c}{1D}}}}
+%		\cpinhibitor{(D = CW)~\cpfunc{z}{p({\cpdiscard})~\cpfunc{c}{C}}}
 % 
 % 	\end{cprulesetcontnum}
 % 	\caption{\label{rules:TSP3} The five rules from \cite{Cooper2019},
@@ -396,25 +398,25 @@
 % 
 % \begin{cprulesetfloat}
 % 	\begin{cprulesetcontnum}
-% 		\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
-% 		\cpfunc{p}{h(R)p()}}~c(\lambda)}
+% 		\cprule{s_1}{\cpfunc{v}{\cpfunc{v}{R}Y}}{\cponce}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Y}~
+% 		\cpfunc{p}{\cpfunc{h}{R}\cpfunc{p}{\,}}}~\cpfunc{c}{\cpempty}}
 % 		
-% 		\cprule[rule:3]{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
-% 		{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
-% 		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+% 		\cprule[rule:3]{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\,} \newline \cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}} \newline \cpfunc{c}{C}}}
+% 		{\cpmaxpar}{s_3}{\cpfunc{z}{\cpfunc{p}{\cpfunc{h}{R} \cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}}}}~\cpfunc{c}{W}}
+% 		\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %		
-%		\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
-%		 \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
-%		\newline  c(CW)}}
-%		\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
-%		\cpfunc{p}{h(F) p(P)}~c(C)}}
-%		\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%		\cprule{s_2}{}{\cpmaxpar}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Z} \newline
+%		 \cpfunc{p}{\cpfunc{h}{T} \cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}}
+%		\newline  \cpfunc{c}{CW}}}
+%		\cppromoter{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\cpfunc{v}{T}Z}~
+%		\cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}~\cpfunc{c}{C}}}
+%		\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %		
-%		\cprule{s_2}{s(\_)}{+}{s_2}{}
+%		\cprule{s_2}{s({\cpdiscard})}{\cpmaxpar}{s_2}{}
 %		
-%		\cprule[rule:4]{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
-%		\cppromoter{\cpfunc{z}{p(P~c(1D)}}
-%		\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+%		\cprule[rule:4]{s_3}{}{\cponce}{s_4}{\cpfunc{p'}{P} \quad \cpfunc{c'}{1D}}
+%		\cppromoter{\cpfunc{z}{\cpfunc{p}{P~\cpfunc{c}{1D}}}}
+%		\cpinhibitor{(D = CW)~\cpfunc{z}{p({\cpdiscard})~\cpfunc{c}{C}}}
 %
 % 	\end{cprulesetcontnum}
 % 	\caption{\label{rules:TSP3} The five rules from \cite{Cooper2019},
@@ -423,7 +425,7 @@
 % \end{cprulesetfloat}
 %
 % \subsubsection{Rules cross-references}
-% If you were paying close attention, you probably would have noticed the optional parameters to some rules in the previous two rulesets.  Something along the lines of |[rule:1]|.  These optional arguments are used to give labels to rules in rulesets, if desired --- a label is only generated if the optional argument is used (and is non-empty).  To use them, you need to use the custom |\cpruleref| command, with the label name, e.g. |\cpruleref{rule:2}| produces the text ``\cpruleref{rule:2}''.  Currently, there's nothing more to it than that.  You could also use |\cpruleref*{rule:2}| to get ``\cpruleref*{rule:2}'', i.e., the number but not the word rule.
+% If you were paying close attention, you probably would have noticed the optional parameters to some rules in the previous two rulesets.  Something along the lines of |[rule:1]|.  These optional arguments are used to give labels to rules in rulesets, if desired --- a label is only generated if the optional argument is used (and is non-empty).  To use them, you need to use the custom |\cpruleref| command, with the label name, \eg{} |\cpruleref{rule:2}| produces the text ``\cpruleref{rule:2}''.  Currently, there's nothing more to it than that.  You could also use |\cpruleref*{rule:2}| to get ``\cpruleref*{rule:2}'', \ie{}, the number but not the word rule.
 % 
 % \newpage This page has been left blank intentionally (excepting any floats that may end up here).  You'll see why in a moment.  \newpage \vspace*{0.1\textheight}
 % 
@@ -433,53 +435,53 @@
 % 
 % \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce the unlabelled non-floating cpruleset,tabsize=2]
 % \begin{cpruleset}
-%	\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
-%	\cpfunc{p}{h(R)p()}}~c(\lambda)}
+%	\cprule{s_1}{\cpfunc{v}{\cpfunc{v}{R}Y}}{\cponce}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Y}~
+%	\cpfunc{p}{\cpfunc{h}{R}\cpfunc{p}{\,}}}~\cpfunc{c}{\cpempty}}
 %	
-%	\cprule{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
-%	{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
-%	\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%	\cprule{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\,} \newline \cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}} \newline \cpfunc{c}{C}}}
+%	{\cpmaxpar}{s_3}{\cpfunc{z}{\cpfunc{p}{\cpfunc{h}{R} \cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}}}}~\cpfunc{c}{W}}
+%	\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %
-%	\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
-%	 \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
-%	\newline c(CW)}}
-%	\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
-%	\cpfunc{p}{h(F) p(P)}~c(C)}}
-%	\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%	\cprule{s_2}{}{\cpmaxpar}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Z} \newline
+%	 \cpfunc{p}{\cpfunc{h}{T} \cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}}
+%	\newline \cpfunc{c}{CW}}}
+%	\cppromoter{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\cpfunc{v}{T}Z}~
+%	\cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}~\cpfunc{c}{C}}}
+%	\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %	
-%	\cprule{s_2}{s(\_)}{+}{s_2}{}
+%	\cprule{s_2}{s({\cpdiscard})}{\cpmaxpar}{s_2}{}
 %	
-%	\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
-%	\cppromoter{\cpfunc{z}{p(P~c(1D)}}
-%	\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+%	\cprule{s_3}{}{\cponce}{s_4}{\cpfunc{p'}{P} \quad \cpfunc{c'}{1D}}
+%	\cppromoter{\cpfunc{z}{\cpfunc{p}{P~\cpfunc{c}{1D}}}}
+%	\cpinhibitor{(D = CW)~\cpfunc{z}{p({\cpdiscard})~\cpfunc{c}{C}}}
 %
 % \end{cpruleset}
 % \end{Verbatim}
 % 
 %\begin{cpruleset}
-%	\cprule{s_1}{\cpfunc{v}{v(R)Y}}{1}{s_2}{\cpfunc{s}{r(R)~u(Y)~
-%	\cpfunc{p}{h(R)p()}}~c(\lambda)}
+%	\cprule{s_1}{\cpfunc{v}{\cpfunc{v}{R}Y}}{\cponce}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Y}~
+%	\cpfunc{p}{\cpfunc{h}{R}\cpfunc{p}{\,}}}~\cpfunc{c}{\cpempty}}
 %	
-%	\cprule{s_2}{\cpfunc{s}{r(R)~u() \newline \cpfunc{p}{h(F)p(P)} \newline c(C)}}
-%	{+}{s_3}{\cpfunc{z}{\cpfunc{p}{h(R) \cpfunc{p}{h(F)p(P)}}}~c(W)}
-%	\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%	\cprule{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\,} \newline \cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}} \newline \cpfunc{c}{C}}}
+%	{\cpmaxpar}{s_3}{\cpfunc{z}{\cpfunc{p}{\cpfunc{h}{R} \cpfunc{p}{\cpfunc{h}{F}\cpfunc{p}{P}}}}~\cpfunc{c}{W}}
+%	\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %
-%	\cprule{s_2}{}{+}{s_2}{\cpfunc{s}{r(R)~u(Z) \newline
-%	 \cpfunc{p}{h(T) \cpfunc{p}{h(F) p(P)}}
-%	\newline c(CW)}}
-%	\cppromoter{\cpfunc{s}{r(R)~\cpfunc{u}{v(T)Z}~
-%	\cpfunc{p}{h(F) p(P)}~c(C)}}
-%	\cppromoter{\cpfunc{e}{f(F)~t(T)~c(W)}}
+%	\cprule{s_2}{}{\cpmaxpar}{s_2}{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{Z} \newline
+%	 \cpfunc{p}{\cpfunc{h}{T} \cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}}
+%	\newline \cpfunc{c}{CW}}}
+%	\cppromoter{\cpfunc{s}{\cpfunc{r}{R}~\cpfunc{u}{\cpfunc{v}{T}Z}~
+%	\cpfunc{p}{\cpfunc{h}{F} \cpfunc{p}{P}}~\cpfunc{c}{C}}}
+%	\cppromoter{\cpfunc{e}{\cpfunc{f}{F}~\cpfunc{t}{T}~\cpfunc{c}{W}}}
 %	
-%	\cprule{s_2}{s(\_)}{+}{s_2}{}
+%	\cprule{s_2}{s({\cpdiscard})}{\cpmaxpar}{s_2}{}
 %	
-%	\cprule{s_3}{}{1}{s_4}{p'(P) \quad c'(1D)}
-%	\cppromoter{\cpfunc{z}{p(P~c(1D)}}
-%	\cpinhibitor{(D = CW)~\cpfunc{z}{p(\_)~c(C)}}
+%	\cprule{s_3}{}{\cponce}{s_4}{\cpfunc{p'}{P} \quad \cpfunc{c'}{1D}}
+%	\cppromoter{\cpfunc{z}{\cpfunc{p}{P~\cpfunc{c}{1D}}}}
+%	\cpinhibitor{(D = CW)~\cpfunc{z}{p({\cpdiscard})~\cpfunc{c}{C}}}
 %
 % \end{cpruleset}
 %
-% This has been carefully constructed to reveal another problem with this approach.  Without the floating environment, the ruleset is printed essentially exactly where it was declared, with the box of the |cpruleset| mostly printing on one page, but breaking and starting again on the next, but the text contained inside the environment is shifted down, overflowing the normal bottom margin for the main text.  I.e. the two become out-of-sync.  In this instance, whitespace was played around with to ensure this would happen (which is why an earlier page was left blank intentionally), but it happened by chance in an earlier draft of this documentation.
+% This has been carefully constructed to reveal another problem with this approach.  Without the floating environment, the ruleset is printed essentially exactly where it was declared, with the box of the |cpruleset| mostly printing on one page, but breaking and starting again on the next, but the text contained inside the environment is shifted down, overflowing the normal bottom margin for the main text.  \Ie{} the two become out-of-sync.  In this instance, whitespace was played around with to ensure this would happen (which is why an earlier page was left blank intentionally), but it happened by chance in an earlier draft of this documentation.
 % 
 % \subsubsection{An inline cprule}
 % The |cpruleinline| macro is included to typeset a rule inside the main text without needing to create a full cpruleset environment.  The macro takes one parameter, a |cprule*| macro (you could probably use a regular |cprule| macro, but I'm not sure what will happen, except that the rule will probably get a number you could do without).  E.g.
@@ -506,23 +508,23 @@
 % \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce \autoref{obj:fig7},tabsize=2]
 % \begin{cpobjectsfloat}
 % 	\begin{cpobjects}
-% 		\cpobjectsline{\cpfunc{e}{f(1)~t(2)~w(1)}
-% 		\quad \cpfunc{e}{f(1)~t(3)~w(3)}
-% 		\quad \cpfunc{e}{f(1)~t(5)~w(2)}
-% 		\quad \cpfunc{e}{f(2)~t(1)~w(1)}}
-% 		\cpobjectsline{\cpfunc{e}{f(2)~t(4)~w(6)} 
-% 		\quad \cpfunc{e}{f(2)~t(5)~w(4)}
-% 		\quad \cpfunc{e}{f(3)~t(1)~w(3)}
-% 		\quad \cpfunc{e}{f(3)~t(4)~w(8)}}
-% 		\cpobjectsline{\cpfunc{e}{f(3)~t(5)~w(5)}
-% 		\quad \cpfunc{e}{f(4)~t(2)~w(6)}
-% 		\quad \cpfunc{e}{f(4)~t(3)~w(8)} 
-% 		\quad \cpfunc{e}{f(4)~t(5)~w(7)}}
-% 		\cpobjectsline{\cpfunc{e}{f(5)~t(1)~w(2)} 
-% 		\quad \cpfunc{e}{f(5)~t(2)~w(4)}
-% 		\quad \cpfunc{e}{f(5)~t(3)~w(5)} 
-% 		\quad \cpfunc{e}{f(5)~t(4)~w(7)}}
-% 		\cpobjectsline{\cpfunc{v}{v(1)\,v(2)\,v(3)\,v(4)\,v(5)}}
+% 		\cpobjectsline{\cpfunc{e}{\cpfunc{f}{1}~\cpfunc{t}{2}~\cpfunc{w}{1}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{1}~\cpfunc{t}{3}~\cpfunc{w}{3}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{1}~\cpfunc{t}{5}~\cpfunc{w}{2}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{2}~\cpfunc{t}{1}~\cpfunc{w}{1}}}
+% 		\cpobjectsline{\cpfunc{e}{\cpfunc{f}{2}~\cpfunc{t}{4}~\cpfunc{w}{6}} 
+% 		\quad \cpfunc{e}{\cpfunc{f}{2}~\cpfunc{t}{5}~\cpfunc{w}{4}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{3}~\cpfunc{t}{1}~\cpfunc{w}{3}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{3}~\cpfunc{t}{4}~\cpfunc{w}{8}}}
+% 		\cpobjectsline{\cpfunc{e}{\cpfunc{f}{3}~\cpfunc{t}{5}~\cpfunc{w}{5}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{4}~\cpfunc{t}{2}~\cpfunc{w}{6}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{4}~\cpfunc{t}{3}~\cpfunc{w}{8}} 
+% 		\quad \cpfunc{e}{\cpfunc{f}{4}~\cpfunc{t}{5}~\cpfunc{w}{7}}}
+% 		\cpobjectsline{\cpfunc{e}{\cpfunc{f}{5}~\cpfunc{t}{1}~\cpfunc{w}{2}} 
+% 		\quad \cpfunc{e}{\cpfunc{f}{5}~\cpfunc{t}{2}~\cpfunc{w}{4}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{5}~\cpfunc{t}{3}~\cpfunc{w}{5}} 
+% 		\quad \cpfunc{e}{\cpfunc{f}{5}~\cpfunc{t}{4}~\cpfunc{w}{7}}}
+% 		\cpobjectsline{\cpfunc{v}{\cpfunc{v}{1}\,\cpfunc{v}{2}\,\cpfunc{v}{3}\,\cpfunc{v}{4}\,\cpfunc{v}{5}}}
 % 	\end{cpobjects}
 % 	\caption{\label{obj:fig7} The first example of an objects group}
 % \end{cpobjectsfloat}
@@ -530,23 +532,23 @@
 % 
 % \begin{cpobjectsfloat}
 % 	\begin{cpobjects}
-% 		\cpobjectsline{\cpfunc{e}{f(1)~t(2)~w(1)}
-% 		\quad \cpfunc{e}{f(1)~t(3)~w(3)}
-% 		\quad \cpfunc{e}{f(1)~t(5)~w(2)}
-% 		\quad \cpfunc{e}{f(2)~t(1)~w(1)}}
-% 		\cpobjectsline{\cpfunc{e}{f(2)~t(4)~w(6)} 
-% 		\quad \cpfunc{e}{f(2)~t(5)~w(4)}
-% 		\quad \cpfunc{e}{f(3)~t(1)~w(3)}
-% 		\quad \cpfunc{e}{f(3)~t(4)~w(8)}}
-% 		\cpobjectsline{\cpfunc{e}{f(3)~t(5)~w(5)}
-% 		\quad \cpfunc{e}{f(4)~t(2)~w(6)}
-% 		\quad \cpfunc{e}{f(4)~t(3)~w(8)} 
-% 		\quad \cpfunc{e}{f(4)~t(5)~w(7)}}
-% 		\cpobjectsline{\cpfunc{e}{f(5)~t(1)~w(2)} 
-% 		\quad \cpfunc{e}{f(5)~t(2)~w(4)}
-% 		\quad \cpfunc{e}{f(5)~t(3)~w(5)} 
-% 		\quad \cpfunc{e}{f(5)~t(4)~w(7)}}
-% 		\cpobjectsline{\cpfunc{v}{v(1)\,v(2)\,v(3)\,v(4)\,v(5)}}
+% 		\cpobjectsline{\cpfunc{e}{\cpfunc{f}{1}~\cpfunc{t}{2}~\cpfunc{w}{1}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{1}~\cpfunc{t}{3}~\cpfunc{w}{3}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{1}~\cpfunc{t}{5}~\cpfunc{w}{2}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{2}~\cpfunc{t}{1}~\cpfunc{w}{1}}}
+% 		\cpobjectsline{\cpfunc{e}{\cpfunc{f}{2}~\cpfunc{t}{4}~\cpfunc{w}{6}} 
+% 		\quad \cpfunc{e}{\cpfunc{f}{2}~\cpfunc{t}{5}~\cpfunc{w}{4}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{3}~\cpfunc{t}{1}~\cpfunc{w}{3}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{3}~\cpfunc{t}{4}~\cpfunc{w}{8}}}
+% 		\cpobjectsline{\cpfunc{e}{\cpfunc{f}{3}~\cpfunc{t}{5}~\cpfunc{w}{5}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{4}~\cpfunc{t}{2}~\cpfunc{w}{6}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{4}~\cpfunc{t}{3}~\cpfunc{w}{8}} 
+% 		\quad \cpfunc{e}{\cpfunc{f}{4}~\cpfunc{t}{5}~\cpfunc{w}{7}}}
+% 		\cpobjectsline{\cpfunc{e}{\cpfunc{f}{5}~\cpfunc{t}{1}~\cpfunc{w}{2}} 
+% 		\quad \cpfunc{e}{\cpfunc{f}{5}~\cpfunc{t}{2}~\cpfunc{w}{4}}
+% 		\quad \cpfunc{e}{\cpfunc{f}{5}~\cpfunc{t}{3}~\cpfunc{w}{5}} 
+% 		\quad \cpfunc{e}{\cpfunc{f}{5}~\cpfunc{t}{4}~\cpfunc{w}{7}}}
+% 		\cpobjectsline{\cpfunc{v}{\cpfunc{v}{1}\,\cpfunc{v}{2}\,\cpfunc{v}{3}\,\cpfunc{v}{4}\,\cpfunc{v}{5}}}
 % 	\end{cpobjects}
 % 	\caption{\label{obj:fig7} The first example of an objects group}
 % \end{cpobjectsfloat}
@@ -820,7 +822,7 @@
 % 
 % 
 % \begin{macro}{\cpresetrulenumber}
-% Reset the rules counter, i.e. make it zero again, so that the next rule in the document will receive the number 1.
+% Reset the rules counter, \ie{} make it zero again, so that the next rule in the document will receive the number 1.
 %    \begin{macrocode}
 \newcommand*{\cpresetrulenumber}{
     \cpchangerulenumber{0}
@@ -859,21 +861,21 @@
 % \begin{macro}{\cprulerefNoStar}
 % The below is used to enable cross-referencing for rules numbers.  It was adapated from this TeX.StackExchange answer: \url{https://tex.stackexchange.com/a/610616/113430}.  Many thanks to Ulrike Fischer for it.  At current, I am using a basic implementation which does \emph{not} have any hyperlinking capabilities or anything.  I want to figure out how this all works a bit more before I get into anything fancy --- and I don't want to introduce a dependency of hyperref just yet.
 %    \begin{macrocode}
-\newcommand*{\cprulerefNoStar}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{rule \zref{#1}}}
+\newcommand*{\cprulerefNoStar}[1]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{rule \zref{#1}}}
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\cprulerefStar}
 % Much the same as |\cprulerefNoStar|, but \emph{doesn't} include the word ``rule''.
 %    \begin{macrocode}
-\newcommand*{\cprulerefStar}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{\zref{#1}}}
+\newcommand*{\cprulerefStar}[1]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{\zref{#1}}}
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\cpRuleref}
 % Identical to |\cprulerefNoStar|, except that the word ``rule'' is capitalised.  There is no starred version of this one, because that would end up identical in effect to |\cpruleref*|.
 %    \begin{macrocode}
-\newcommand*{\cpRuleref}[1]{\zref@extract{#1}{cpsystems@ruleslabel}{Rule \zref{#1}}}
+\newcommand*{\cpRuleref}[1]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{Rule \zref{#1}}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -1021,9 +1023,9 @@
 %
 % \subsubsection{Internal commands for cross-referencing of rules numbers}
 % \begin{macro}{Rule references internal defs}
-% The below is used to enable cross-referencing for rules numbers.  It was adapated from this TeX.StackExchange answer: \url{https://tex.stackexchange.com/a/610616/113430}.  Many thanks to Ulrike Fischer for it.  At current, I am using a basic implementation which does \emph{not} have any hyperlinking capabilities or anything.  I want to figure out how this all works a bit more before I get into anything fancy --- and I don't want to introduce a dependency of hyperref just yet.
+% The below is used to enable cross-referencing for rules numbers.  It was adapated from this TeX.StackExchange answer: \url{https://tex.stackexchange.com/a/610616/113430}.  Many thanks to Ulrike Fischer for it.
 %    \begin{macrocode}
-\zref@newprop{cpsystems@ruleslabel}[Doc-Start]{}
+\zref@newprop{cpsystems@ruleslabel}[Doc-Start]{\@currentHref}
 \zref@addprop{main}{cpsystems@ruleslabel}
 %    \end{macrocode}
 % \end{macro}
@@ -1095,7 +1097,7 @@
 % \item Make the package available via CTAN.
 % \item Eliminate the extraneous symbols in the index (it is unclear why they are appearing, when they have been specifically excluded using the normal method for \texttt{.dtx} files).
 % \item Change the implementation of the package to using \LaTeX{} 3.
-% \item Versions of |cpruleset| and |cpobjects| that \emph{don't} draw boxes around themselves.  Perhaps, e.g. |cpruleset*|.
+% \item Versions of |cpruleset| and |cpobjects| that \emph{don't} draw boxes around themselves.  Perhaps, \eg{} |cpruleset*|.
 % \item A way to break up one ruleset or objects group into multiple boxes and/or across multiple pages, cleanly.  Though, to be honest, if this is becoming an issue for a ruleset, it probably means that the ruleset has grown large enough that it could be logically split into subsets.  Objects groups may be a different story.
 % \item Seek to integrate this package into David Orellana Martín's `membranecomputing' package (\url{https://ctan.org/pkg/membranecomputing}).
 % \item Modify the objectsgroup environment to show somehow the state that the system or containing top-level cell is in at the moment of the object snapshot.
