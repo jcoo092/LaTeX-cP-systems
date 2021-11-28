@@ -20,9 +20,9 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[2011/06/27]
 \ProvidesPackage{cpsystems}
-[2021/09/02 v0.22 Package to aid in typesetting cP systems
+[2021/11/28 v0.23 Package to aid in typesetting cP systems
 rulesets, following Nicolescu's standard style]
-\RequirePackage{amsmath}
+\RequirePackage{mathtools}
 \RequirePackage{array}
 \RequirePackage{etoolbox}
 \RequirePackage{framed}
@@ -53,7 +53,7 @@ placement={htbp},]
 \newenvironment{cpobjects}{\begin{framed}}{\end{framed}}
 \newcommand{\cptuple}[7]{
     \[
-        \cpfunc{\Pi_{#1}}{#2, #3, #4, #5, #6, #7}
+\cpfunc{\Pi^{\mathit{cP}}_{\mathit{#1}}}{#2, #3, #4, #5, #6, #7}
     \]
 }
 \newcommand*{\cptupletemplate}{
@@ -85,6 +85,12 @@ placement={htbp},]
 \newcommand*{\cpinhibitor}[1]{
 \cpsystems@cpprominhi{\neg}{#1}
 }
+\newcommand*{\cpoutsymbol}[2]{
+    \cpsystems@perfunangles{#1}\downarrow_{#2}
+}
+\newcommand{\cpoutsymbolall}[1]{
+    \cpsystems@perfunangles{#1}\downarrow_{\forall}
+}
 \newcommand{\cpsend}[2]{
     \cpsystems@basecpsendrecv{#1}{#2}{!}
 }
@@ -111,15 +117,23 @@ placement={htbp},]
                   \cprulerefStar%
                   \cprulerefNoStar%
               }
-\newcommand*{\cprulerefNoStar}[1]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{rule \zref{#1}}}
-\newcommand*{\cprulerefStar}[1]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{\zref{#1}}}
-\newcommand*{\cpRuleref}[1]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{Rule \zref{#1}}}
+\newcommand*{\cprulerefNoStar}[2][]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{Rule (\zref{#2}#1)}}
+\newcommand*{\cprulerefStar}[2][]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{(\zref{#2}#1)}}
+\newcommand*{\cpRuleref}[2][]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{Rule (\zref{#2}#1)}}
 \newcommand{\cpobjectsline}[1]{
 \[#1\]
 }
 \newcommand*{\cpset}[1]{\cpsystems@perfuncurly{#1}}
-\newcommand*{\cpfunc}[2]{
+\newcommand*{\cpfunc}{%
+             \@ifstar
+                  \cpfuncStar%
+                  \cpfuncNoStar%
+              }
+\newcommand*{\cpfuncNoStar}[2]{
 #1\cpsystems@perfunparens{#2}
+}
+\newcommand*{\cpfuncStar}[3][]{
+#2\cpsystems@mtparens[#1]{#3}
 }
 \newcommand*{\cpfuncms}[2]{
 #1\cpsystems@perfuncurly{#2}
@@ -144,8 +158,15 @@ placement={htbp},]
 \newcommand*{\cpdiscard}{\_}
 \AfterPreamble{
     \ifdef{\crefname}
-        {\crefname{cprulesetfloat}{ruleset}{rulesets}
-        \crefname{cpobjectsfloat}{objects group}{objects groups}}
+        {%
+        \if@cref@capitalise
+            \crefname{cprulesetfloat}{Ruleset}{Rulesets}%
+            \crefname{cpobjectsfloat}{Objects Group}{Objects Groups}%
+        \else
+            \crefname{cprulesetfloat}{ruleset}{rulesets}%
+            \crefname{cpobjectsfloat}{objects group}{objects groups}%
+        \fi
+        }
     {}
 }
 \newcounter{cpsystems@RuleNum}[cprulesetfloat]

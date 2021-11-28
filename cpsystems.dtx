@@ -43,13 +43,13 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[2011/06/27]
 %<package>\ProvidesPackage{cpsystems}
 %<*package>
-[2021/09/02 v0.22 Package to aid in typesetting cP systems 
+[2021/11/28 v0.23 Package to aid in typesetting cP systems 
 	rulesets, following Nicolescu's standard style]
 %</package>
 %
 %<*driver>
 \documentclass{ltxdoc}
-\usepackage{cpsystems}[2022/09/02 v0.22]
+\usepackage{cpsystems}[2021/11/28 v0.23]
 \usepackage{fancyvrb}
 \usepackage[abbreviations]{foreign}
 \usepackage[hidelinks]{hyperref}
@@ -65,6 +65,7 @@
 %</driver>
 % \fi
 %
+% \changes{0.23}{2021/11/28}{Add in and tweak commands following the last-minute changes I made for my dissertation.  The \texttt{cptuple} command was updated with sub- and superscripts for the Pi symbol;  the \texttt{cpoutsymbol} commands were added;  the rule reference commands were changed to typeset the rule numbers inside parentheses;  compatibility between cleveref and the float commands was improved;  a starred version of the \texttt{cpfunc} command was introduced, which does \emph{not} have autogrowing brackets (but some sizing information can be provided with an optional argument) -- this also re-enables the use of linebreaks within those commands.}
 % \changes{0.22}{2021/09/02}{Update the rules references commands so that they also do hyperlinking, following the example from Ulrike Fischer on TeX.StackExchange.  Also, redid much of the example rulesets and objects groups so that everything is now properly encapsulated inside \texttt{cpfunc} commands.}
 % \changes{0.21}{2021/08/19}{Change the bracket type for inter-top-level-cell communication from curly braces to angle brackets.  Add starred and capitalised variants of the \texttt{ruleref} macro --- the former replaces \texttt{rulerefalt}.  Rename it to \texttt{cpruleref} for consistency purposes.  Convert \texttt{cprulenonum} to \texttt{cprule*}.}
 % \changes{0.20}{2021/08/15}{Introduce the \texttt{ruleref} and \texttt{rulerefalt} commands.  This (sadly) means that, at present, you \emph{cannot} adjust a rule's spacing between the RHS and the rule number.  Rename \texttt{cpterm} to \texttt{cptermdef} to reflect the fact that it used to provide the definition of a cP systems term, and not somehow declare one or anything.  Add in some setup stuff so that this package's floating environments work with basic usage of the cleveref package.}
@@ -498,7 +499,50 @@
 %
 % 
 % \subsubsection{Sending and receiving}
-% Examples are yet to be included.
+%
+% \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce the sending and receiving example ruleset,tabsize=2]
+%\begin{cpruleset}
+%
+%	\cprule[rule:send]{s_1}{a}{\cpmaxpar}{s_2}{\cpsend{b}{a}}
+%
+%	\cprule[rule:recv]{s_1}{\cprecv{\cpfunc{e}{\cpfunc{c}{\cpundig}}}{d}}
+% {\cponce}{s_2}{\cpundig}
+%
+%	\cprule[rule:antiport]{s_2}{p \; \cpantirecv{q}{r}}
+% {\cponce}{s_3}{q \; \cpantisend{p}{r}}
+%
+%	\cprule[rule:outsymbol]{s_3}{x}{\cpmaxpar}{s_4}{\cpoutsymbol{x}{y}}
+%
+%	\cprule[rule:outsymbolall]{s_3}{z}{\cponce}{s_4}{\cpoutsymbolall{z}}
+% \end{cpruleset}
+% \end{Verbatim}
+% 
+%\begin{cpruleset}
+%
+%	\cprule[rule:send]{s_1}{a}{\cpmaxpar}{s_2}{\cpsend{b}{a}}
+%
+%	\cprule[rule:recv]{s_1}{\cprecv{\cpfunc{e}{\cpfunc{c}{\cpundig}}}{d}}
+% {\cponce}{s_2}{\cpundig}
+%
+%	\cprule[rule:antiport]{s_2}{p \; \cpantirecv{q}{r}}
+% {\cponce}{s_3}{q \; \cpantisend{p}{r}}
+%
+%	\cprule[rule:outsymbol]{s_3}{x}{\cpmaxpar}{s_4}{\cpoutsymbol{x}{y}}
+%
+%	\cprule[rule:outsymbolall]{s_3}{z}{\cponce}{s_4}{\cpoutsymbolall{z}}
+% \end{cpruleset}
+%
+% \begin{Verbatim}[gobble=1,frame=lines,labelposition=topline,label=Code to produce rules cross-references,tabsize=2]
+% \cpRuleref{rule:send} is |cpsend|, while \cpruleref{rule:recv} is |cprecv| 
+% and \cpruleref{rule:antiport} demonstrates both |cpantisend| and |cpantirecv|, 
+% for antiport communication.  Meanwhile, rules \cpruleref*{rule:outsymbol} and 
+% \cpruleref*{rule:outsymbolall} deal with the |cpoutsymbol| rules.
+% \end{Verbatim}
+%
+% \cpRuleref{rule:send} is |cpsend|, while \cpruleref{rule:recv} is |cprecv| 
+% and \cpruleref{rule:antiport} demonstrates both |cpantisend| and |cpantirecv|, 
+% for antiport communication.  Meanwhile, rules \cpruleref*{rule:outsymbol} and 
+% \cpruleref*{rule:outsymbolall} deal with the |cpoutsymbol| rules.
 % 
 % \subsubsection{Listings of objects}
 % Listing the objects contained within a top-level cP~systems cell is a fairly common activity, especially when writing out examples of the operation of usage for a given system.  Thus, this package includes some assistance for writing those out, also.  The style is derived from that used in other recent papers.
@@ -598,7 +642,7 @@
 % \subsection{Preamble}
 %
 %    \begin{macrocode}
-\RequirePackage{amsmath}
+\RequirePackage{mathtools}
 \RequirePackage{array}
 \RequirePackage{etoolbox}
 \RequirePackage{framed}
@@ -675,7 +719,7 @@
 %    \begin{macrocode}
 \newcommand{\cptuple}[7]{
     \[
-        \cpfunc{\Pi_{#1}}{#2, #3, #4, #5, #6, #7}
+	\cpfunc{\Pi^{\mathit{cP}}_{\mathit{#1}}}{#2, #3, #4, #5, #6, #7}
     \]
 }
 %    \end{macrocode}
@@ -761,6 +805,24 @@
 %    \begin{macrocode}
 \newcommand*{\cpinhibitor}[1]{
 	\cpsystems@cpprominhi{\neg}{#1}
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\cpoutsymbol}
+% Used when discussing sending symbols out to a neighbour \emph{without} using a channel.
+%    \begin{macrocode}
+\newcommand*{\cpoutsymbol}[2]{
+    \cpsystems@perfunangles{#1}\downarrow_{#2}
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\cpoutsymbolall}
+% Used when discussing sending symbols out to all neighbours \emph{without} using channels.
+%    \begin{macrocode}
+\newcommand{\cpoutsymbolall}[1]{
+    \cpsystems@perfunangles{#1}\downarrow_{\forall}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -859,23 +921,23 @@
 % \end{macro}
 %
 % \begin{macro}{\cprulerefNoStar}
-% The below is used to enable cross-referencing for rules numbers.  It was adapated from this TeX.StackExchange answer: \url{https://tex.stackexchange.com/a/610616/113430}.  Many thanks to Ulrike Fischer for it.  At current, I am using a basic implementation which does \emph{not} have any hyperlinking capabilities or anything.  I want to figure out how this all works a bit more before I get into anything fancy --- and I don't want to introduce a dependency of hyperref just yet.
+% The below is used to enable cross-referencing for rules numbers.  It was adapated from this TeX.StackExchange answer: \url{https://tex.stackexchange.com/a/610616/113430}.  Many thanks to Ulrike Fischer for it.
 %    \begin{macrocode}
-\newcommand*{\cprulerefNoStar}[1]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{rule \zref{#1}}}
+\newcommand*{\cprulerefNoStar}[2][]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{Rule (\zref{#2}#1)}}
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\cprulerefStar}
 % Much the same as |\cprulerefNoStar|, but \emph{doesn't} include the word ``rule''.
 %    \begin{macrocode}
-\newcommand*{\cprulerefStar}[1]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{\zref{#1}}}
+\newcommand*{\cprulerefStar}[2][]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{(\zref{#2}#1)}}
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\cpRuleref}
 % Identical to |\cprulerefNoStar|, except that the word ``rule'' is capitalised.  There is no starred version of this one, because that would end up identical in effect to |\cpruleref*|.
 %    \begin{macrocode}
-\newcommand*{\cpRuleref}[1]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{Rule \zref{#1}}}
+\newcommand*{\cpRuleref}[2][]{\hyperlink{\zref@extract{#1}{cpsystems@ruleslabel}}{Rule (\zref{#2}#1)}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -904,11 +966,31 @@
 % \subsubsection{Miscellaneous}
 %
 % \begin{macro}{\cpfunc}
-% Command for declaring a cP~systems functor.
+%The base ``selector'' macro for choosing between the starred and unstarred |\cpfunc| variants.
+%    \begin{macrocode}
+\newcommand*{\cpfunc}{%
+             \@ifstar
+                  \cpfuncStar%
+                  \cpfuncNoStar%
+              }
+%    \end{macrocode}
+% \end{macro}
+% 
+% \begin{macro}{\cpfuncNoStar}
+% Command for declaring a cP~systems functor.  This version is the default version and uses ``auto-growing'' brackets.
 % The first argument is the symbol for the functor itself, and the second argument is the objects contained inside the functor.
 %    \begin{macrocode}
-\newcommand*{\cpfunc}[2]{
+\newcommand*{\cpfuncNoStar}[2]{
 	#1\cpsystems@perfunparens{#2}
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\cpfuncStar}
+% 	Same as with a regular |\cpfuncNoStar|, but does not use auto-growing brackets.  You can, however, provide one of the size arguments found in the |mathtools| package documentation to specify an appropriate size manually.  The main advantage of this form of the |cpfunc| command is that it is possible to use linebreaks inside the functor in this version.
+%    \begin{macrocode}
+\newcommand*{\cpfuncStar}[3][]{
+	#2\cpsystems@mtparens[#1]{#3}
 }
 %    \end{macrocode}
 % \end{macro}
@@ -1001,8 +1083,15 @@
 %    \begin{macrocode}
 \AfterPreamble{
     \ifdef{\crefname}
-        {\crefname{cprulesetfloat}{ruleset}{rulesets}
-        \crefname{cpobjectsfloat}{objects group}{objects groups}}
+        {%
+	        \if@cref@capitalise
+	            \crefname{cprulesetfloat}{Ruleset}{Rulesets}%
+	            \crefname{cpobjectsfloat}{Objects Group}{Objects Groups}%
+	        \else
+	            \crefname{cprulesetfloat}{ruleset}{rulesets}%
+	            \crefname{cpobjectsfloat}{objects group}{objects groups}%
+	        \fi
+        }
     {}
 }
 %    \end{macrocode}
@@ -1090,7 +1179,7 @@
 % A handful of possible improvements have been thought of already, though in most cases it is entirely unclear how to achieve them at this point.  They include:
 % \begin{itemize}
 % \item A command to create line breaks in |cpruleset| environments, without requiring the user to fill in all the \&s required by the contained |array| environment to make it work.
-% \item Restoring support for line breaks inside |cpfunc| commands -- it seems to be unavoidable at times, but doesn't play nicely with the resizing brackets.
+% \item Improving support for linebreaks with |cpfunc| commands.
 % \item Change to a different, more modern way of declaring |cpruleset| environments that doesn't rely on the |array| environment.  There's nothing wrong with |array|, but it's probably more low-level than I actually need, and doesn't come with some conveniences (I imagine).
 % \item The ability to specify optional parameters to the |cpruleset| stating the desired amount of arraystretch and adjustwidth  to use.  Currently they are hard-coded as \texttt{1.1em} and \texttt{-1.0em}, respectively.
 % \item Provide the ability to specify a printed name for |cprulesetfloat| and |cpobjectsfloat| besides `Ruleset' and `Objects Group'.
