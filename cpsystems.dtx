@@ -1,7 +1,7 @@
 % \iffalse meta-comment
 % !TEX program  = pdfLaTeX
 %
-% Copyright (C) 2021 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
+% Copyright (C) 2022 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
 % ---------------------------------------------------------------------------
 % This work may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3
@@ -22,7 +22,7 @@
 % \iffalse
 %<*readme>
 %%cpsystems LaTeX package
-%%Copyright (C) 2021 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
+%%Copyright (C) 2022 by James Cooper, University of Auckland <jcoo092@aucklanduni.ac.nz>
 %%
 %%The goal of this work is to provide a self-contained, easy-to-use LaTeX package that eases the typesetting of cP systems, a variant of Membrane Computing/P systems created by Dr. Radu Nicolescu and collaborators in the early 2010s.  Please refer to the package documentation for instructions on its use.  To the best of my knowledge, it is compatible with all LaTeX2e distributions which are reasonably up-to-date, as well as all classes (and likely all or almost all packages) that are typically used for publishing material on P systems.
 %%
@@ -43,13 +43,13 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[2011/06/27]
 %<package>\ProvidesPackage{cpsystems}
 %<*package>
-[2021/11/28 v0.23 Package to aid in typesetting cP systems 
+[2022/05/29 v0.24 Package to aid in typesetting cP systems 
 	rulesets, following Nicolescu's standard style]
 %</package>
 %
 %<*driver>
 \documentclass{ltxdoc}
-\usepackage{cpsystems}[2021/11/28 v0.23]
+\usepackage{cpsystems}[2022/05/29 v0.24]
 \usepackage{fancyvrb}
 \usepackage[abbreviations]{foreign}
 \usepackage[hidelinks]{hyperref}
@@ -65,6 +65,7 @@
 %</driver>
 % \fi
 %
+% \changes{0.24}{2022/05/29}{Add a \texttt{cptuplechans} command (and it's corresponding template command) to express the set of sets of channel endpoints that can be found in each cP~systems' top-level cell.}
 % \changes{0.23}{2021/11/28}{Add in and tweak commands following the last-minute changes I made for my dissertation.  The \texttt{cptuple} command was updated with sub- and superscripts for the Pi symbol;  the \texttt{cpoutsymbol} commands were added;  the rule reference commands were changed to typeset the rule numbers inside parentheses;  compatibility between cleveref and the float commands was improved;  a starred version of the \texttt{cpfunc} command was introduced, which does \emph{not} have autogrowing brackets (but some sizing information can be provided with an optional argument) -- this also re-enables the use of linebreaks within those commands.}
 % \changes{0.22}{2021/09/02}{Update the rules references commands so that they also do hyperlinking, following the example from Ulrike Fischer on TeX.StackExchange.  Also, redid much of the example rulesets and objects groups so that everything is now properly encapsulated inside \texttt{cpfunc} commands.}
 % \changes{0.21}{2021/08/19}{Change the bracket type for inter-top-level-cell communication from curly braces to angle brackets.  Add starred and capitalised variants of the \texttt{ruleref} macro --- the former replaces \texttt{rulerefalt}.  Rename it to \texttt{cpruleref} for consistency purposes.  Convert \texttt{cprulenonum} to \texttt{cprule*}.}
@@ -141,6 +142,16 @@
 % \subsection{Macros}
 % 
 % Brief descriptions of the rules and their use are provided here for reference purposes, but it is recommended that you take a look at \autoref{sect:fulleg} for examples on how to use them properly.
+%
+% \subsubsection{cP systems tuples}
+%
+% \noindent
+% \DescribeMacro{\cptuple}
+% Declare the composition of a given cP~system, by specifying it as a tuple (common to most other forms of P~systems, also).  
+%
+% \noindent
+% \DescribeMacro{\cptuplechans}
+% Declare the composition of a given cP~system, by specifying it as a tuple (common to most other forms of P~systems, also).   This version includes channels.
 % 
 % \subsubsection{Rules}
 %
@@ -232,6 +243,7 @@
 % \DescribeMacro{\cptermdef}
 % This command is used to explain the meaning of a given cP systems term/symbol.  E.g. if you have a functor such as \(a(b)\), you might use |\cptermdef| entries to explain the meanings of both the \(a\) functor and \(b\) atom.  Note that the current implementation of this command automatically includes a full stop/period at the end of the description -- so if you include one inside the description, you will get a double dot.  It is generally recommended to encapsulate these definitions inside a |description| environment, which ends up with everything set out pretty well.  Further, separating out the atoms from the functors from the states is also recommended.  So far, using a |paragraph| command to give the relevant title to each one, followed by a |description| with the |cptermdef|s inside that seems to work out pretty well.
 %
+%
 % \noindent
 % \DescribeMacro{\cpundig}
 % |\cpundig|
@@ -244,6 +256,12 @@
 % 
 % 
 % \subsection{\label{sect:fulleg}Full examples}
+%
+% \subsubsection{\label{sect:cptuples}cP~systems tuples}
+%
+% \cptupletemplate{}
+% \cptuplechanstemplate{}
+% \cptuplechans{chans}{T}{A}{O}{C}{R}{S}{sbar}
 % 
 % \subsubsection{A floating cP~systems ruleset}
 % 
@@ -725,11 +743,31 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \begin{macro}{\cptuplechans}
+% A convenience for stating the definition of a cP~system, including the channel endpoints found inside each top-level cell.  Use the non-chan version when channels aren't a thing, and this one when channels \emph{are} a part of the definition.  The first parameter is the subscript to \(\Pi\), while the next seven are T, A, O, C, R, S, and \(\Bar{s}\).
+%    \begin{macrocode}
+\newcommand{\cptuplechans}[8]{
+    \[
+	\cpfunc{\Pi^{\mathit{cP}}_{\mathit{#1}}}{#2, #3, #4, #5, #6, #7, #8}
+    \]
+}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\cptupletemplate}
 % A convenience for stating the definition of a cP~system.  The template tuple that is usually stated as how a cP~system is defined.
 %    \begin{macrocode}
 \newcommand*{\cptupletemplate}{
     \cptuple{cP}{T}{A}{O}{R}{S}{\Bar{s}}
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\cptuplechanstemplate}
+% A convenience for stating the definition of a cP~system.  The template tuple that is usually stated as how a cP~system is defined.  This version includes \(C\), the set of sets channels found in each top-level cell.
+%    \begin{macrocode}
+\newcommand*{\cptuplechanstemplate}{
+    \cptuplechans{cP}{T}{A}{O}{C}{R}{S}{\Bar{s}}
 }
 %    \end{macrocode}
 % \end{macro}
