@@ -20,7 +20,7 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[2011/06/27]
 \ProvidesPackage{cpsystems}
-[2022/05/29 v0.24 Package to aid in typesetting cP systems
+[2022/06/05 v0.24.1 Package to aid in typesetting cP systems
 rulesets, following Nicolescu's standard style]
 \RequirePackage{mathtools}
 \RequirePackage{array}
@@ -199,6 +199,7 @@ placement={htbp},]
 \newcommand{\cpsystems@perfunangles}[1]{
     \perfectunary{IncreaseHeight}{\langle}{\rangle}{#1}
 }
+\DeclarePairedDelimiter{\cpsystems@mtparens}{\lparen}{\rparen}
 \endinput
 %%
 %% End of file `cpsystems.sty'.

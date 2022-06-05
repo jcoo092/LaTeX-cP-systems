@@ -43,13 +43,13 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[2011/06/27]
 %<package>\ProvidesPackage{cpsystems}
 %<*package>
-[2022/05/29 v0.24 Package to aid in typesetting cP systems 
+[2022/06/05 v0.24.1 Package to aid in typesetting cP systems 
 	rulesets, following Nicolescu's standard style]
 %</package>
 %
 %<*driver>
 \documentclass{ltxdoc}
-\usepackage{cpsystems}[2022/05/29 v0.24]
+\usepackage{cpsystems}[2022/06/05 v0.24.1]
 \usepackage{fancyvrb}
 \usepackage[abbreviations]{foreign}
 \usepackage[hidelinks]{hyperref}
@@ -65,6 +65,7 @@
 %</driver>
 % \fi
 %
+% \changes{0.24.1}{2022/06/05}{Turns out that the \texttt{cpfunc*} command was relying on a set of paired delimiters that I somehow never actually declared...  This \emph{should} fix that.}
 % \changes{0.24}{2022/05/29}{Add a \texttt{cptuplechans} command (and it's corresponding template command) to express the set of sets of channel endpoints that can be found in each cP~systems' top-level cell.}
 % \changes{0.23}{2021/11/28}{Add in and tweak commands following the last-minute changes I made for my dissertation.  The \texttt{cptuple} command was updated with sub- and superscripts for the Pi symbol;  the \texttt{cpoutsymbol} commands were added;  the rule reference commands were changed to typeset the rule numbers inside parentheses;  compatibility between cleveref and the float commands was improved;  a starred version of the \texttt{cpfunc} command was introduced, which does \emph{not} have autogrowing brackets (but some sizing information can be provided with an optional argument) -- this also re-enables the use of linebreaks within those commands.}
 % \changes{0.22}{2021/09/02}{Update the rules references commands so that they also do hyperlinking, following the example from Ulrike Fischer on TeX.StackExchange.  Also, redid much of the example rulesets and objects groups so that everything is now properly encapsulated inside \texttt{cpfunc} commands.}
@@ -1149,7 +1150,7 @@
 % \end{macro}
 %
 % \subsubsection{Internal commands for cross-referencing of rules numbers}
-% \begin{macro}{Rule references internal defs}
+% \begin{macro}{Rule references}
 % The below is used to enable cross-referencing for rules numbers.  It was adapated from this TeX.StackExchange answer: \url{https://tex.stackexchange.com/a/610616/113430}.  Many thanks to Ulrike Fischer for it.
 %    \begin{macrocode}
 \zref@newprop{cpsystems@ruleslabel}[Doc-Start]{\@currentHref}
@@ -1205,11 +1206,18 @@
 % \end{macro}
 %
 % \begin{macro}{\cpsystems@perfunangles}
-% Convenience rule used to provide the wrapping of other things in auto-growing curly braces.  Introduced because I found I was starting to copy-paste the raw command frequently.
+% Convenience rule used to provide the wrapping of other things in auto-growing angle braces.  Introduced because I found I was starting to copy-paste the raw command frequently.
 %    \begin{macrocode}
 \newcommand{\cpsystems@perfunangles}[1]{
     \perfectunary{IncreaseHeight}{\langle}{\rangle}{#1}
 }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{Paired Delimiters}
+% Declaration of the paired delimiters for use with |\cpfunc*|.  The |\DeclarePairedDelimiter| command comes from the mathtools package.
+%    \begin{macrocode}
+\DeclarePairedDelimiter{\cpsystems@mtparens}{\lparen}{\rparen}
 %    \end{macrocode}
 % \end{macro}
 %
